@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.system.dao.SystemUserMapper">
+	<sql id="Base_Column_List">
+		l_user_id as userId,
+		vc_name as userLoginName,
+		vc_user_name
+		as userName,
+		vc_password as userPassword,
+		vc_remark as remark,
+		l_status
+		as userStatus,
+		vc_user_type as userType,
+		l_leave as isLeave,
+		vc_worknumber as userAuthCode
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="String"
+		resultType="com.datadriver.web.system.model.SystemUser">
+		select
+		<include refid="Base_Column_List" />
+		from SYS_USER
+		where L_USER_ID = #{userId}
+	</select>
+	
+	<select id="selectByUserName" parameterType="String"
+		resultType="com.datadriver.web.system.model.SystemUser">
+		select
+		<include refid="Base_Column_List" />
+		from SYS_USER
+		where vc_name = #{userLoginName}
+	</select>
+	
+	<select id="selectByUserNameAndPw" parameterType="com.datadriver.web.system.model.SystemUser"
+		resultType="com.datadriver.web.system.model.SystemUser">
+		select
+		<include refid="Base_Column_List" />
+		from SYS_USER
+		where vc_name = #{userLoginName}
+		and vc_password = #{userPassword}
+	</select>
+	
+	
+	<delete id="deleteByPrimaryKey" parameterType="String">
+		delete from
+		SYS_USER
+		where L_USER_ID = #{userId}
+	</delete>
+	<insert id="insert" parameterType="com.datadriver.web.system.model.SystemUser">
+		insert into SYS_USER
+		(l_user_id,
+		vc_name,
+		vc_user_name,
+		vc_password,
+		vc_remark,
+		l_status,
+		vc_user_type,
+		l_leave,
+		vc_worknumber)
+		values
+		(
+		SEQ_SYS_USER_ID.NEXTVAL,
+		#{userLoginName},
+		#{userName},
+		#{userPassword},
+		#{remark},
+		'0',
+		#{userType},
+		'0',
+		#{userAuthCode}
+		)
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.system.model.SystemUser">
+		update SYS_USER
+		<set>
+			<if test="userLoginName != null">
+				VC_NAME = #{userLoginName},
+			</if>
+			<if test="userName != null">
+				VC_USER_NAME = #{userName},
+			</if>
+			<if test="userPassword != null">
+				VC_PASSWORD = #{userPassword},
+			</if>
+			<if test="remark != null">
+				VC_REMARK = #{remark},
+			</if>
+			<if test="userStatus != null">
+				L_STATUS = #{userStatus},
+			</if>
+			<if test="userType != null">
+				VC_USER_TYPE = #{userType},
+			</if>
+			<if test="isLeave != null">
+				L_LEAVE = #{isLeave},
+			</if>
+			<if test="userAuthCode != null">
+				vc_worknumber = #{userAuthCode},
+			</if>
+		</set>
+		where L_USER_ID = #{userId}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.datadriver.web.system.model.SystemUser">
+		update SYS_USER
+		set
+		VC_NAME = #{userLoginName},
+		VC_USER_NAME = #{userName},
+		VC_PASSWORD = #{userPassword},
+		VC_REMARK = #{remark},
+		L_STATUS = #{userStatus},
+		VC_USER_TYPE = #{userType},
+		L_LEAVE = #{isLeave},
+		vc_worknumber = #{userAuthCode},
+		where L_USER_ID =
+		#{userId}
+	</update>
+
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.user.dao.UserMapper">
+	<sql id="Base_Column_List"> to_char(l_user_id) as userId, vc_name as uname, vc_user_name as userName, vc_password as userPass, vc_remark as userRemark, to_char(l_status) as userStatus, vc_user_type as userType,
+		to_char(l_leave) as leave, to_char(vc_worknumber) as workNumber, vc_position as vcPosition
+	</sql>
+	<select id="getPwdIsCorrect" parameterType="com.datadriver.web.user.dto.UserDto" resultType="String">
+		<!-- 密码加密使用 -->
+		<!-- SELECT DECODE(U.VC_PASSWORD,FUN_MD5(#{oldPassword,jdbcType=VARCHAR}),'TRUE','FALSE') FROM SYS_USER U WHERE U.L_USER_ID=#{userId,jdbcType=NUMERIC} -->
+		<!-- 密码未加密使用 -->
+		SELECT DECODE(U.VC_PASSWORD,#{oldPassword,jdbcType=VARCHAR},'TRUE','FALSE') FROM SYS_USER U WHERE U.L_USER_ID=#{userId,jdbcType=NUMERIC}
+	</select>
+	<update id="updatePwdById" parameterType="com.datadriver.web.user.dto.UserDto">
+		<!-- 密码加密使用 -->
+		<!-- UPDATE SYS_USER U SET U.VC_PASSWORD=FUN_MD5(#{newPassword,jdbcType=VARCHAR}) WHERE U.L_USER_ID=#{userId,jdbcType=NUMERIC} -->
+		<!-- 密码未加密使用 -->
+		UPDATE SYS_USER U SET U.VC_PASSWORD=#{newPassword,jdbcType=VARCHAR} WHERE U.L_USER_ID=#{userId,jdbcType=NUMERIC}
+	</update>
+	<!-- 角色赋权查询 -->
+	<select id="selectRoleTree" parameterType="String" resultType="com.datadriver.web.common.model.ZtreeNode">
+	
+	<!--  select tt1.*, decode((select count(*) from sys_user_role su where su.l_role_id = tt1.id and su.l_user_id = 1), '0', 'false',
+		'true') checked from (select t1.l_role_id as id, t1.vc_name as name, to_char(t2.pid) as pid, 'false' as open from (select tx.* from sys_role tx) t1, (select vc_group, rownum as pid from (select
+		distinct vc_group from sys_role)) t2, sys_user_role t3 where t1.vc_group = t2.vc_group and t3.l_role_id = t1.l_role_id union all select rownum as id, tb.vc_group as name, 'T' as pid, 'true' as open
+		from (select distinct vc_group from sys_role) tb) tt1 left join sys_user_role tt2 on tt1.id = tt2.l_role_id and tt2.l_user_id =#{userId}
+	-->
+	
+	select e.l_role_id id,e.vc_name name,''pid, 'false' open ,
+decode((select count(*) from sys_user_role m where m.l_role_id=e.l_role_id and m.l_user_id=#{userId}),0,'false','true') checked
+ from sys_role e where e.l_status=0
+	
+	</select>
+	<!-- 先按用户ID删除所有的角色权限 -->
+	<insert id="deleteUserRole" parameterType="com.datadriver.web.user.model.User"> DELETE FROM SYS_USER_ROLE where L_USER_ID = #{userId}
+	</insert>
+	<!-- 角色授权 -->
+	<insert id="saveUserRole" parameterType="java.util.List">
+		insert into SYS_USER_ROLE (L_USER_ID, L_ROLE_ID)
+		<foreach collection="list" item="item" index="index" separator="union all"> select #{item.userId,jdbcType=NUMERIC}, #{item.leave,jdbcType=NUMERIC} from dual
+		</foreach>
+	</insert>
+	<!-- 查询用户列表 -->
+	<select id="selectPageByUserName" parameterType="com.datadriver.web.user.dto.UserDto" resultType="com.datadriver.web.user.model.User">
+		select
+		<include refid="Base_Column_List" />
+		from sys_user
+		<where>
+			<if test="uname!=null and uname!=''"> and vc_name like concat(concat('%',#{uname}),'%')
+			</if>
+			<if test="userName!=null and userName!=''"> and vc_user_name like concat(concat('%',#{userName}),'%')
+			</if>
+			<if test="leave!=null and leave!=''"> and l_leave = #{leave}
+			</if>
+			<if test="workNumber!=null and workNumber!=''"> and vc_worknumber = #{workNumber}
+			</if>
+			<if test="userType!=null and userType!=''"> and vc_user_type = #{userType}
+			</if>
+			<if test="userStatus!=null and userStatus!=''"> and l_status = #{userStatus}
+			</if>
+		</where>
+		<if test="orderString!=null and orderString!=''"> order by ${orderString}
+		</if>
+	</select>
+	<!-- 新增用户 -->
+	<insert id="insert" parameterType="com.datadriver.web.user.model.User"> insert into sys_user (L_USER_ID, VC_NAME,VC_USER_NAME,VC_PASSWORD, VC_REMARK, L_STATUS, VC_USER_TYPE,L_LEAVE,VC_WORKNUMBER,VC_POSITION) values ( SEQ_SYS_USER_ID.NEXTVAL,
+		#{uname,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{userPass,jdbcType=VARCHAR}, #{userRemark,jdbcType=VARCHAR}, #{userStatus,jdbcType=NUMERIC}, #{userType,jdbcType=VARCHAR},
+		#{leave,jdbcType=NUMERIC}, #{workNumber,jdbcType=VARCHAR}, #{vcPosition,jdbcType=VARCHAR} )
+	</insert>
+	<!-- 按ID修改用户 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.user.model.User">
+		update sys_user
+		<set>
+			<if test="uname != null"> VC_NAME = #{uname,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null"> VC_USER_NAME = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userRemark != null"> VC_REMARK = #{userRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="userStatus != null"> L_STATUS = to_number(#{userStatus,jdbcType=NUMERIC}),
+			</if>
+			<if test="userType != null"> VC_USER_TYPE = #{userType,jdbcType=VARCHAR},
+			</if>
+			<if test="leave != null"> L_LEAVE = #{leave,jdbcType=VARCHAR},
+			</if>
+			<if test="workNumber != null"> VC_WORKNUMBER = #{workNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="vcPosition != null"> VC_POSITION = #{vcPosition,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where L_USER_ID = #{userId}
+	</update>
+	<!-- 编辑时查询用户 -->
+	<select id="selectByPrimaryKey" parameterType="String" resultType="com.datadriver.web.user.model.User">
+		select
+		<include refid="Base_Column_List" />
+		from sys_user where L_USER_ID = #{userId,jdbcType=NUMERIC}
+	</select>
+	<!-- 删除用户 -->
+	<delete id="deleteByPrimaryKey" parameterType="String"> delete from sys_user where L_USER_ID = #{userId,jdbcType=NUMERIC}
+	</delete>
+	<!-- 按ID修改用户,不修改用户密码 -->
+	<update id="updateUserByUserId" parameterType="com.datadriver.web.user.model.User">
+		update sys_user
+		<set>
+			<if test="uname != null"> VC_NAME = #{uname,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null"> VC_USER_NAME = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userRemark != null"> VC_REMARK = #{userRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="userStatus != null"> L_STATUS = to_number(#{userStatus,jdbcType=NUMERIC}),
+			</if>
+			<if test="userType != null"> VC_USER_TYPE = #{userType,jdbcType=VARCHAR},
+			</if>
+			<if test="leave != null"> L_LEAVE = #{leave,jdbcType=VARCHAR},
+			</if>
+			<if test="workNumber != null"> VC_WORKNUMBER = #{workNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="vcPosition != null"> VC_POSITION = #{vcPosition,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where L_USER_ID = #{userId}
+	</update>
+	
+	<select id="findUserInsert" parameterType="com.datadriver.web.user.model.User"
+		resultType="Integer">
+		select count(*) from sys_user pp
+		where 1=1 and pp.l_leave='0' and pp.vc_name = #{uname,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findUserUpdate" parameterType="com.datadriver.web.user.model.User"
+		resultType="Integer">
+		select count(*) from sys_user pp
+		where 1=1 and pp.l_leave='0' and pp.vc_name = #{uname,jdbcType=VARCHAR} and pp.l_user_id not in (#{userId,jdbcType=NUMERIC})
+	</select>
+	
+	
+</mapper>

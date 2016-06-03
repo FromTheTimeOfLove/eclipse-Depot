@@ -1,0 +1,60 @@
+@CHARSET "utf-8";
+
+/*
+	基本信息顶部轮次树
+*/
+.top-tree {
+	position: absolute;
+	margin-top: 5px;
+	height: 40px;
+	z-index: 999;
+ 	margin-left: 100px;
+ 	margin-right: 100px;
+}
+.top-tree ul  {
+	width: 100%;
+	height: 100%;
+}
+.top-tree ul li {
+	height: 100%;
+	float:left;
+	margin-right:20px;
+	margin-bottom:5px;
+	list-style-type: none;
+}
+.top-tree ul li a{
+	display:block;
+	width:auto !important;
+	min-width:80px;
+	/* width: expression_r( document.body.clientWidth < 980 ? "980px" : "80%"); */
+	padding:5px;
+	text-align:center;
+	margin-left: 15px;
+	color:#666666;
+	background-color: #DBE4E1;
+	font-family: "Arial";
+	font-size: 18px;
+	font-weight: bold;
+	font-style:italic;
+	margin-top:-5px;
+}
+.top-tree ul li a:HOVER {
+	color:#ffffff;
+	background-color: #ff6600;
+}
+.top-tree ul li a[class='noHref']:HOVER {
+	color:#666666;
+	background-color: #e1e1e1;
+}
+
+.top-tree ul li   div.current{
+	margin-top:0px;
+	margin-left: 0px;
+	width:100%;
+	height:100%;
+}
+.top-tree ul li   div.current a{
+	color:#ffffff;
+	background-color: #ff6600;
+}
+

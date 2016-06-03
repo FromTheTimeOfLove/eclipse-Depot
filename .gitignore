@@ -1,0 +1,8 @@
+/.apt_src/
+/build/
+/.classpath
+/.svn
+/.project
+/.settings
+/.class
+/target/

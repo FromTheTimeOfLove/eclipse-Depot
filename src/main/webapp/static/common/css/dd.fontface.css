@@ -1,0 +1,27 @@
+@font-face {
+    font-family: 'San Francisco Medium';
+    font-style: normal;
+  	font-weight: 400;
+    src: url('fonts/SanFranciscoMedium.eot');
+    src: url('fonts/SanFranciscoMedium.eot') format('embedded-opentype'),
+         url('fonts/SanFranciscoMedium.woff2') format('woff2'),
+         url('fonts/SanFranciscoMedium.woff') format('woff'),
+         url('fonts/SanFranciscoMedium.ttf') format('truetype'),
+         url('fonts/SanFranciscoMedium.svg#opensans') format('svg');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+  	font-weight: 400;
+    src: url('fonts/opensans.eot');
+    src: local('Open Sans'),
+         local('OpenSans'),
+    	 url('fonts/opensans.eot') format('embedded-opentype'),
+         url('fonts/opensans.woff2') format('woff2'),
+         url('fonts/opensans.woff') format('woff'),
+         url('fonts/opensans.ttf') format('truetype'),
+         url('fonts/opensans.svg#opensans') format('svg');
+}
+body, h1, h2, h3, h4, h5, h6, p, span {
+	font-family: "Open Sans","San Francisco Medium",  sans-serif
+}

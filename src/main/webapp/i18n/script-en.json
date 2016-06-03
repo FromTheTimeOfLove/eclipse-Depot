@@ -1,0 +1,94 @@
+{
+	"GENERAL":{
+		"ADD":"Add",
+		"EDIT":"Edit",
+		"DELETE":"Delete",
+		"RESETPASS":"reset Password",
+		"ROLESET":"Role Settings",
+		"LOADING":"Loading",
+		"NODATA":"No data",
+		"SUCCESS":"Success",
+		"FAIL":"Fail",
+		"ERROR":"Error",
+		"OK":"OK",
+		"CANCEL":"Cancel",
+		"NEXT":"Next",
+		"CONFIRM":{
+			"GEN":"Please confirm do this?",
+			"ADD":"Please confirm to save?",
+			"EDIT":"Please confirm to eidt?",
+			"DELETE":"Please confirm to delete?"
+		},
+		"SEESION_TIMEOUT":"Session timeout,please login again!",
+		"DATATABLE_PAGE":{
+			"lengthMenu":"Show_MENU_entries",
+			"zeroRecords":"No Data",
+			"info":"Showing _PAGE_ page (Total _PAGES_ pages,total _TOTAL_ entries)",
+			"infoEmpty":"",
+			"processing":"...",
+			"infoFiltered":"",
+			"paginate":{
+				"previous":"Previous",
+				"next":"Next",
+				"page":"",
+				"pageOf":""
+			}
+		},
+		"COMMON_INDEX":"Index",
+		"COMMON_OPERATION":"Operation"
+	},
+	"LOGIN":{
+        "VALID":{
+			"LOGINNAME_NULL":"Login account is null",
+			"PASSWORD_NULL":"Password is null"
+		}
+    },
+	"USER":{
+        "SERNOVER":"Sernover",
+        "TURNOVER":"Turnover",
+        "ENABLE":"Enable",
+        "DISABLE":"Disable",
+        "ROLESET":"Role",
+        "ALTER_PWD":"Password",
+        "VALID":{
+			"USERNAME_NULL":"User name is null",
+			"LOGINNAME_NULL":"Login name is null",
+			"PASSWORD_NULL":"Password is null",
+			"USERTYPE_NULL":"User type is null",
+			"WORKNUMBER_NULL":"Worknumber is null",
+			"NEW_PASSWORD_NULL":"New password is null",
+			"TWICE_PASSWORD_NOT":"Wrong twitce password ",
+			"PASSWORD_LENGTH_ERROR":"Password length must between 5 and 10",
+			"PASSWORD_OLD_ERROR":"Wrong old password"
+		}
+    },
+    "ROLE":{
+        "ENABLE":"Enable",
+        "DISABLE":"Disable",
+        "PERMISSION":"Permission",
+        "VALID":{
+			"ROLENAME_NULL":"Role name is null",
+			"ROLEGROUP_NULL":"Role group name is null"
+		}
+    },
+    "STUDENT":{
+        "STUDENTNAME":"Name",
+        "STUDENTAGE":"Age",
+        "STUDENTEMAIL":"Email",
+        "STUDENTADDRESS":"Address"
+    },
+    "ONEPAPER":{
+        "ADD":"Add One Paper",
+        "EDIT":"Edit One Paper",
+        "GO":"Go TS SIGNED"
+    },
+    "TSSIGNED":{
+        "ADD":"Add Ts Signed",
+        "EDIT":"Edit Ts Signed",
+        "GO":"Go Basic Info"
+    },
+    "BASICEXIT":{
+    	"ADD":"Add Exit Info",
+    	"EDIT":"Edit Exit Info"
+    }
+}

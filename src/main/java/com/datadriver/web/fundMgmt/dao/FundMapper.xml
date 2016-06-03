@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.fundMgmt.dao.FundMapper">
+	<!-- 分页查询出资主体 -->
+	<select id="selectFundPage" parameterType="com.datadriver.web.fundMgmt.dto.FundDto" resultType="com.datadriver.web.fundMgmt.model.Fund">
+		select l_fund_id fundId,v_fund_name fundName,'人民币' fundCurrency,v_fund_desc fundDesc from p_fund_info
+		<where>
+			<if test="fundName!=null and fundName!=''">
+				and v_fund_name like concat(concat('%',#{fundName}),'%')
+			</if>
+		</where>
+		<if test="orderString!=null and orderString!=''">
+			order by ${orderString}
+		</if>
+	</select>
+	<!-- 根据主键查询编辑页面显示的数据 -->
+	<select id="selectByPrimaryKey" parameterType="Long" resultType="com.datadriver.web.fundMgmt.model.Fund"> 
+		select l_fund_id fundId,
+		       v_fund_name fundName,
+		       v_fund_desc fundDesc,
+		       v_simplename simpleName,
+		       v_istruefund istruefund,
+		       v_moneygm moneygm,
+		       v_memberadvboard memberAdvBoard,
+		       v_membersinvcommittee memberSinvCommittee,
+		       v_otherimportantissues otherImportantIssues,
+		       v_allocationprinciples allocationPrinciples
+		  from p_fund_info
+		where l_fund_id = #{fundId}
+	</select>
+	<!-- 插入出资主体数据 -->
+	<insert id="insertSelective" parameterType="com.datadriver.web.fundMgmt.model.Fund">
+		insert into p_fund_info
+		  (l_fund_id,
+		   v_fund_name,
+		   v_fund_desc,
+		   v_simplename,
+		   v_istruefund,
+		   v_moneygm,
+		   v_memberadvboard,
+		   v_membersinvcommittee,
+		   v_otherimportantissues,
+		   v_allocationprinciples)
+		values
+		  (SEQ_P_FUND_ID.NEXTVAL,
+		   #{fundName},
+		   #{fundDesc},
+		   #{simpleName},
+		   #{istruefund},
+		   #{moneygm},
+		   #{memberAdvBoard},
+		   #{memberSinvCommittee},
+		   #{otherImportantIssues},
+		   #{allocationPrinciples})
+	</insert>
+	<!-- 修改出资主体数据 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.fundMgmt.model.Fund">
+		update p_fund_info
+		   set v_fund_name = #{fundName},
+		       v_fund_desc = #{fundDesc},
+		       v_simplename = #{simpleName},
+		       v_istruefund = #{istruefund},
+		       v_moneygm = #{moneygm},
+		       v_memberadvboard = #{memberAdvBoard},
+		       v_membersinvcommittee = #{memberSinvCommittee},
+		       v_otherimportantissues = #{otherImportantIssues},
+		       v_allocationprinciples = #{allocationPrinciples}
+		 where l_fund_id = #{fundId}
+	</update>
+	<!-- 根据ID删除出资主体 -->
+	<delete id="deleteByPrimaryKey" parameterType="Long">
+		delete p_fund_info where l_fund_id = #{fundId}
+	</delete>
+	<select id="isRepeat" parameterType="com.datadriver.web.fundMgmt.model.Fund" resultType="Long">
+		select count(*) from p_fund_info
+		 where v_fund_name = #{fundName}
+		<if test="fundId!=null and fundId!=''">
+			and l_fund_id != #{fundId} 
+		</if>
+	</select>
+</mapper>

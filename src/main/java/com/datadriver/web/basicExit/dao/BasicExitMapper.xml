@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.basicExit.dao.BasicExitMapper">
+  <!-- 查询Basic Exit -->
+  <select id="selectBasicExitList" parameterType="com.datadriver.web.basicExit.dto.BasicExitDto" resultType="com.datadriver.web.basicExit.model.BasicExit">
+  	select e.exitid basicExitId,
+	       pop.paperid paperId,
+	       pop.v_chname portfolioNameCH,
+	       pop.v_enname portfolioNameEN,
+	       (select e.dim_nme
+	          from e_dim e
+	         where pop.v_sector = e.dim_cde
+	           and e.dim_type = 'sector') sectorName,
+	       (select e.dim_nme
+	          from e_dim e
+	         where pop.v_stage = e.dim_cde
+	           and e.dim_type = 'stage') stageName,
+	       (select ed.dim_nme
+	          from e_dim ed
+	         where e.v_type = ed.dim_cde
+	           and ed.dim_type = 'type') typeName,
+	       trim(to_char(e.n_proceedamount,'999,999,999,999,999.99')) proceedsAmount,
+	       trim(to_char(e.n_investcost,'999,999,999,999,999.99')) reducedInvestcost,
+	       to_char(e.d_solddate, 'yyyy-mm-dd') dateSold,
+	       (select count(1) from p_exit p where p.paperid = e.paperid) countSize
+	  from p_one_paper pop
+	  left join (select *
+	               from (select row_number() over(partition by pe.paperid order by pe.d_uppdate desc) rk,
+	                            pe.*
+	                       from p_exit pe)
+	              where rk = 1) e on e.paperid = pop.paperid
+	  <where>
+	  	pop.v_thrudate = '0'
+	  	<if test="portfolioNameCH!=null and portfolioNameCH !=''">
+	  		and pop.v_chname like '%' || '${portfolioNameCH}'||'%'
+	  	</if>
+	  	<if test="sectorId != null and sectorId != ''">
+	  		and pop.v_sector = #{sectorId}
+	  	</if>
+	  	<if test="fundId != null and fundId != ''">
+	  		and pop.v_fund = #{fundId}
+	  	</if>
+	  	<if test="stageId != null and stageId != ''">
+	  		and pop.v_stage = #{stageId}
+	  	</if>
+	  </where>
+	  <if test="orderString!=null and orderString!=''">
+			order by ${orderString}
+	  </if>
+  </select>
+  <!-- 根据paperId查出新增需要回显的数据 -->
+  <select id="selectByPaperId" parameterType="String" resultType="com.datadriver.web.basicExit.model.BasicExit">
+  	select pop.paperid        paperId,
+	       pop.v_chname       portfolioNameCH,
+	       pop.v_enname       portfolioNameEN,
+	       pop.v_partnerone   dealPartnerOne,
+	       pop.v_partnertwo   dealPartnerTwo,
+	       pop.v_partnerthree dealPartnerThi,
+	       pop.v_sector       sectorId,
+	       pop.v_fund         fundId
+	  from p_one_paper pop
+	where pop.paperid = #{paperId}
+  </select>
+  <!-- 根据exitId查出编辑需要回显的BasicExit数据 -->
+  <select id="selectByPrimaryKey" parameterType="Long" resultType="com.datadriver.web.basicExit.model.BasicExit">
+  	select pe.exitid basicExitId,
+	       pop.paperid paperId,
+	       pop.v_chname portfolioNameCH,
+	       pop.v_enname portfolioNameEN,
+	       to_char(pe.d_signdate,'yyyy-mm-dd') signDate,
+	       pe.v_sector sectorId,
+	       pe.v_fund fundId,
+	       pe.v_partnerone dealPartnerOne,
+	       pe.v_partnertwo dealPartnerTwo,
+	       pe.v_partnerthree dealPartnerThi,
+	       pe.v_type typeId,
+	       trim(to_char(pe.n_proceedamount,'999,999,999,999,999.99')) proceedsAmount,
+	       trim(to_char(pe.n_investcost,'999,999,999,999,999.99')) reducedInvestcost,
+	       to_char(pe.d_solddate,'yyyy-mm-dd') dateSold,
+	       pe.v_soldafter afterSold,
+	       (select count(1) from p_exit p where p.exitid = pe.exitid) countSize
+	  from p_one_paper pop,p_exit pe
+	  where pe.paperid = pop.paperid
+	  and pe.exitid = #{basicExitId}
+  </select>
+  <!-- 插入Basic Exit数据 -->
+  <insert id="insertSelective" parameterType="com.datadriver.web.basicExit.model.BasicExit">
+  	insert into p_exit
+	  (exitid,
+	   paperid,
+	   d_signdate,
+	   v_sector,
+	   v_fund,
+	   v_partnerone,
+	   v_partnertwo,
+	   v_partnerthree,
+	   v_type,
+	   n_proceedamount,
+	   d_solddate,
+	   v_soldafter,
+	   n_investcost,
+	   d_indate,
+	   d_uppdate)
+	values
+	  (seq_p_exit_id.nextval,
+	   #{paperId},
+	   to_date(#{signDate},'yyyy-mm-dd'),
+	   #{sectorId},
+	   #{fundId},
+	   #{dealPartnerOne},
+	   #{dealPartnerTwo},
+	   #{dealPartnerThi},
+	   #{typeId},
+	   #{proceedsAmount},
+	   to_date(#{dateSold},'yyyy-mm-dd'),
+	   #{afterSold},
+	   #{reducedInvestcost},
+	   sysdate,
+	   sysdate)
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.basicExit.model.BasicExit">
+  	update p_exit
+	   set d_signdate = to_date(#{signDate},'yyyy-mm-dd'),
+	       v_sector = #{sectorId},
+	       v_fund = #{fundId},
+	       v_partnerone = #{dealPartnerOne},
+	       v_partnertwo = #{dealPartnerTwo},
+	       v_partnerthree = #{dealPartnerThi},
+	       v_type = #{typeId},
+	       n_proceedamount = #{proceedsAmount},
+	       d_solddate = to_date(#{dateSold},'yyyy-mm-dd'),
+	       v_soldafter = #{afterSold},
+	       n_investcost = #{reducedInvestcost},
+	       d_uppdate = sysdate
+	 where exitid = #{basicExitId}
+  </update>
+  <!-- 查询点击+号查出的数据 -->
+  <select id="findRowDetails" parameterType="String" resultType="com.datadriver.web.basicExit.model.BasicExit">
+  	select pe.exitid basicExitId,
+	       pop.paperid paperId,
+	       pop.v_chname portfolioNameCH,
+	       pop.v_enname portfolioNameEN,
+	       (select e.dim_nme
+	          from e_dim e
+	         where pop.v_sector = e.dim_cde
+	           and e.dim_type = 'sector') sectorName,
+	       (select e.dim_nme
+	          from e_dim e
+	         where pop.v_stage = e.dim_cde
+	           and e.dim_type = 'stage') stageName,
+	       (select e.dim_nme
+	          from e_dim e
+	         where pe.v_type = e.dim_cde
+	           and e.dim_type = 'type') typeName,
+	       trim(to_char(pe.n_proceedamount,'999,999,999,999,999.99')) proceedsAmount,
+	       trim(to_char(pe.n_investcost,'999,999,999,999,999.99')) reducedInvestcost,
+	       to_char(pe.d_solddate, 'yyyy-mm-dd') dateSold,
+	       (select count(1) from p_exit p where p.paperid = pe.paperid) countSize
+	  from p_one_paper pop, p_exit pe
+	 where pe.paperid = pop.paperid
+	   and pe.paperid = (select p.paperid from p_exit p where p.exitid = #{basicExitId})
+	   and pe.exitid !=#{basicExitId}
+	   order by pe.d_uppdate desc
+  </select>
+  <!-- 删除当前信息 -->
+  <delete id="deleteByPrimaryKey" parameterType="Long">
+  	delete p_exit pe where pe.exitid = #{basicExitId}
+  </delete>
+</mapper>

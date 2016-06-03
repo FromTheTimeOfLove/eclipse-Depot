@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.role.dao.RoleMapper">
+	<sql id="Base_Column_List">
+		to_char(L_ROLE_ID) as roleId,
+		vc_name as roleName,
+		vc_remark as roleRemark,
+		to_char(l_status) as roleStatus,
+		vc_group as roleGroup
+	</sql>
+	
+	<delete id="deleteRolePermission" parameterType="com.datadriver.web.role.dto.RoleDto">
+		DELETE FROM SYS_ROLE_ACTION RA
+			WHERE RA.L_ROLE_ID=#{roleId,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="saveRolePermission"  parameterType="java.util.List">
+		INSERT INTO SYS_ROLE_ACTION RA(RA.L_ROLE_ID,RA.L_ACTION_ID,RA.AUTHORITY)
+		<foreach collection="list" item="item" separator="UNION ALL">
+			SELECT #{item.roleId,jdbcType=VARCHAR},
+					#{item.permissionId,jdbcType=VARCHAR},
+					#{item.authority,jdbcType=VARCHAR} FROM DUAL
+		</foreach>
+	</insert>
+	
+	<select id="findPermissionTree" parameterType="com.datadriver.web.role.dto.RoleDto" resultType="com.datadriver.web.role.model.RoleAndPermissionZtreeNode">
+		select distinct sa.l_action_id id,
+                sa.l_parent_action_id pId,
+                sa.vc_name name,
+                sa.m_pin actionPin,
+                sa.vc_type as permissionType,
+                decode(sa.l_parent_action_id, 0, 'true', 'false') open,
+                decode((select count(*)
+                         from sys_role_action ra
+                        where ra.l_role_id = #{roleId,jdbcType=VARCHAR}
+                          and ra.l_action_id = sa.l_action_id),
+                       0,
+                       'false',
+                       'true') checked
+		  from sys_action sa
+		  where sa.l_status='0'
+		 order by sa.m_pin
+	</select>
+
+	<!-- 查询角色列表 -->
+	<select id="selectPageByRoleName" parameterType="com.datadriver.web.role.dto.RoleDto" resultType="com.datadriver.web.role.model.Role">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role
+		<where >
+			<if test="roleName!=null and roleName!=''">
+				and vc_name like '%' || '${roleName}'||'%'
+			</if>
+			<if test="roleGroup!=null and roleGroup!=''">
+				and vc_group like '%' || '${roleGroup}'||'%'
+			</if>
+			<if test="roleStatus!=null and roleStatus!=''">
+				and l_status = ${roleStatus}
+			</if>
+		</where>
+		<if test="orderString!=null and orderString!=''">
+			order by ${orderString}
+		</if>
+	</select>
+	
+	<!-- 新增角色 -->
+	<insert id="insert" parameterType="com.datadriver.web.role.model.Role">
+		insert into sys_role
+		(L_ROLE_ID, VC_NAME, VC_REMARK, L_STATUS, VC_GROUP)
+		values
+		(
+		SEQ_SYS_ROLE_ID.NEXTVAL,
+		#{roleName,jdbcType=VARCHAR},
+		#{roleRemark,jdbcType=VARCHAR},
+		#{roleStatus,jdbcType=NUMERIC},
+		#{roleGroup,jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 按角色ID修改角色 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.role.model.Role">
+		update sys_role
+		<set>
+			<if test="roleName != null">
+				VC_NAME = #{roleName,jdbcType=VARCHAR},
+			</if>
+			<if test="roleStatus != null">
+				L_STATUS = to_number(#{roleStatus,jdbcType=NUMERIC}),
+			</if>
+			<if test="roleRemark != null">
+				VC_REMARK = #{roleRemark,jdbcType=VARCHAR},
+			</if>
+			<if test="roleGroup != null">
+				VC_GROUP = #{roleGroup,jdbcType=VARCHAR}
+			</if>
+		</set>
+		where L_ROLE_ID = #{roleId}
+	</update>
+	
+	<!-- 编辑时查询角色 -->
+	<select id="selectByPrimaryKey" parameterType="String" resultType="com.datadriver.web.role.model.Role">
+		select
+		<include refid="Base_Column_List" />
+		from sys_role
+		where L_ROLE_ID = #{roleId,jdbcType=NUMERIC}
+	</select>
+	
+	<!-- 删除角色 -->
+	<delete id="deleteByPrimaryKey" parameterType="String">
+		delete from
+		sys_role
+		where L_ROLE_ID = #{roleId,jdbcType=NUMERIC}
+	</delete>
+
+	<select id="findRoleInsert" parameterType="com.datadriver.web.role.model.Role"
+		resultType="Integer">
+		select count(*) from sys_role pp
+		where 1=1 and pp.vc_name = #{roleName,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="findRoleUpdate" parameterType="com.datadriver.web.role.model.Role"
+		resultType="Integer">
+		select count(*) from sys_role pp
+		where 1=1 and pp.vc_name = #{roleName,jdbcType=VARCHAR} and pp.l_role_id not in (#{roleId,jdbcType=NUMERIC})
+	</select>
+
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.warrantTracker.dao.WarrantTrackerDao">
+  <!-- 查询列表 -->
+  <sql id="Base_Column_List">
+	to_char(L_ID) stuId, VC_NAME stuName, to_char(L_AGE) stuAge,
+	VC_EMAIL stuEmail, VC_ADDRESS stuAddress, VC_REMARK stuRemark, VC_TYPE stuType
+  </sql>
+  
+  <!-- 查询One Paper -->
+  <select id="selectWarrantTrackerList" parameterType="com.datadriver.web.warrantTracker.dto.WarrantTrackerDto" 
+  	resultType="com.datadriver.web.warrantTracker.model.WarrantTracker">
+  </select>
+	
+</mapper>

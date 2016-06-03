@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.system.dao.SystemRoleMapper">
+	<sql id="Base_Column_List">
+		l_role_id as roleId,
+		vc_name as roleName,
+		vc_remark as
+		roleRemark,
+		l_status as roleStatus,
+		vc_group as roleGroup,
+		l_system as
+		isSystemDefault
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="String"
+		resultType="com.datadriver.web.system.model.SystemRole">
+		select
+		<include refid="Base_Column_List" />
+		from SYS_ROLE
+		where L_ROLE_ID = #{roleId}
+	</select>
+
+	<select id="selectRolesByUserId" parameterType="String"
+		resultType="com.datadriver.web.system.model.SystemRole">
+		select t1.l_role_id as roleId,
+		t1.vc_name as roleName,
+		t1.vc_remark as roleRemark,
+		t1.l_status as roleStatus,
+		t1.vc_group as roleGroup, 
+		t1.l_system as isSystemDefault
+		from sys_role t1,sys_user_role t2
+		where t1.l_role_id=t2.l_role_id
+		and t1.l_status='0'
+		and t2.l_user_id=#{userId}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="String">
+		delete from
+		SYS_ROLE
+		where L_ROLE_ID = #{roleId}
+	</delete>
+	<insert id="insert" parameterType="com.datadriver.web.system.model.SystemRole">
+		insert into SYS_ROLE
+		(l_role_id, vc_name, vc_remark, l_status, vc_group, l_system)
+		values
+		(
+		SEQ_SYS_ROLE_ID.NEXTVAL,
+		#{roleName},
+		#{roleRemark},
+		'0',
+		#{remark},
+		'0',
+		#{roleGroup},
+		'0'
+		)
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.system.model.SystemRole">
+		update SYS_ROLE
+		<set>
+			<if test="roleName != null">
+				VC_NAME = #{roleName},
+			</if>
+			<if test="roleRemark != null">
+				vc_remark = #{roleRemark},
+			</if>
+			<if test="roleStatus != null">
+				l_status = #{roleStatus},
+			</if>
+			<if test="userStatus != null">
+				vc_group = #{userStatus},
+			</if>
+			<if test="roleGroup != null">
+				VC_USER_TYPE = #{roleGroup},
+			</if>
+			<if test="isSystemDefault != null">
+				l_system = #{isSystemDefault},
+			</if>
+		</set>
+		where L_ROLE_ID = #{roleId}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.datadriver.web.system.model.SystemRole">
+		update SYS_USER
+		set
+		VC_NAME = #{roleName},
+		vc_remark = #{roleRemark},
+		l_status =
+		#{roleStatus},
+		vc_group = #{userStatus},
+		VC_USER_TYPE = #{roleGroup},
+		l_system = #{isSystemDefault},
+		where L_ROLE_ID =
+		#{roleId}
+	</update>
+
+</mapper>

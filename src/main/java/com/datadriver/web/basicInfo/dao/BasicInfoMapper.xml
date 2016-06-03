@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.basicInfo.dao.BasicInfoMapper">
+	
+  	<!-- 根据id查询单个Basic Info信息 《映射》  -->
+	<resultMap type="com.datadriver.web.basicInfo.model.BasicInfo" id="byIdBasicObj">
+		<id column="basicinfoid" property="basicInfoId"/>
+		<result column="D_DATE_FUNDING" property="fundingDate"/>
+		<result column="d_signdate" property="signDate"/>
+		<result column="V_IS_APPROVAL_SIGN" property="isApprovalSign"/>
+		<result column="V_PRE_MONEY" property="preMoney"/>
+		<result column="V_POST_MONEY" property="postMoney"/>
+		<result column="V_CONTACTS_NAME" property="contactsName"/>
+		<result column="V_CONTACTS_EMAIL" property="contactsEmail"/>
+		<result column="V_CODE_ADDRESS_EN" property="codeAddressEN"/>
+		<result column="V_CONTACTS_PHONE" property="contactsPhone"/>
+		<result column="V_EXPECTED_RETURN" property="expectedReturn"/>
+		<result column="V_DEVELOPMENT_STAGE" property="developmentStage.code"/>
+		<result column="V_INVESTMENT_STAGE" property="investmentStage.code"/>
+		<result column="V_FDD_MEMBER" property="fddMember.code"/>
+		<result column="V_DEAL_SOURCE" property="dealSource.code"/>
+		<result column="V_BUSINESS_DESCRIPTION_CH" property="businessDescriptionCH"/>
+		<result column="V_BUSINESS_DESCRIPTION_EN" property="businessDescriptionEN"/>
+		<result column="V_IS_LEAD_INVESTOR" property="isLeadInvestor"/>
+		<result column="V_IS_STEALTH_MODE" property="isStealthMode"/>
+		<result column="V_IS_USD_FUND" property="isUsdFund"/>
+		<result column="V_APPROVAL_FUNDING" property="isApprovalFunding"/>
+		<result column="V_NEXT_INDEX" property="nextIndex"/>
+		<result column="V_ONSHORE_ENTITYCITY" property="onshoreEntityCity"/>
+		
+	  <association property="onepBridgeLoan" column="V_ONEP_BRIDGE_LOAN" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+	  
+	  <association property="latestFinancialStatements" column="V_LATEST_FINANCIAL_STATEMENTS" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+	  
+	  <association property="lddReport" column="V_LDD_REPORT" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+	  
+	  <association property="fddReport" column="V_FDD_REPORT" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+	  
+	  <association property="groupChart" column="V_GROUP_CHART" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+	  
+	  <association property="wireInstruction" column="V_WIRE_INSTRUCTION" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+	  
+	  <association property="repLetter" column="V_REPLETTER" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+	  
+	  <association property="transactionDocs" column="V_TRANSACTION_DOCS" select="selectFileObj"
+	   javaType="com.datadriver.web.file.model.DocumentEntity" >
+	  </association>
+  
+	</resultMap>
+  
+	<!-- 查询  ComPliance - Confirmation Team -->
+	<select id="selectLisgaggStr" parameterType="String" resultType="String">
+		select wm_concat(pn.v_content_name || '=' || pn.v_content_value) contentNameVal
+		  from p_note_checklist_confirmation pn
+		 where 1 = 1
+		   and pn.v_content_module = '0'
+		   and pn.v_foreign_key = #{0}
+		   and pn.v_content_team_type = #{1}
+	</select>
+	
+	<!-- 根据外键标识删除 -->
+	<delete id="deleteTeam" parameterType="String">
+		delete from P_NOTE_CHECKLIST_CONFIRMATION p where p.v_foreign_key = #{0} and p.v_content_module = '0'
+	</delete>
+	<!-- 保存 ComPliance - Confirmation Team -->
+	<insert id="insertTeam" parameterType="java.util.HashMap">
+		insert into P_NOTE_CHECKLIST_CONFIRMATION(v_pnote_ck_conf_id, v_foreign_key, v_content_name, v_content_value, v_content_team_type, v_content_module)
+		 select SEQ_P_NOTE_CK_CONFIRMATION.nextval,A.* from (
+				<foreach collection="maps" index="key" item="item"  separator="UNION ALL">
+					SELECT
+						#{foreignKey,jdbcType=NUMERIC},
+		            	#{key,jdbcType=VARCHAR},
+		            	#{item,jdbcType=VARCHAR},
+		            	#{teamType,jdbcType=VARCHAR},
+		            	#{module,jdbcType=VARCHAR}
+		            from dual 
+				</foreach>
+			) A
+	</insert>
+  
+  <!-- 查询file -->
+  <select id="selectFileObj" parameterType="String" resultType="com.datadriver.web.file.model.DocumentEntity">
+  	select
+	  f.docid fileId,
+	  f.v_docname fileName,
+	  f.v_docpath filePath
+	from p_file f
+		where f.docid = #{0} and f.v_thrudate = 0
+  </select>
+	
+  <!-- 根据id查询单个Basic Info信息 -->
+  <select id="queryBasicInfoObj" parameterType="String" resultMap="byIdBasicObj">
+  	select
+  		<include refid="Base_byIdObj_basic"/>
+  	from p_basic_info p
+	where 1=1 
+      and p.d_thru_date is null
+      and p.basicinfoid = #{0}
+  </select>
+  
+  <!-- 查询信息 -->
+  <select id="findBasicInfoListbyDto" parameterType="com.datadriver.web.basicInfo.dto.BasicInfoDto" 
+  	resultType="com.datadriver.web.basicInfo.model.BasicInfo">
+         select 
+			<include refid="Base_basicInfo_List"/>
+		  from p_one_paper po,
+		       (select *
+		          from (select row_number() over(partition by pb.PAPER_ID order by pb.d_modify_date desc) rk,
+		                       pb.BASICINFOID,
+		                       pb.paper_id,
+		                       pb.d_modify_date                  
+		                  from p_basic_info pb
+		                 where 1 = 1
+		                   and pb.d_thru_date is null)
+		         where rk = 1) p
+		<include refid="Base_where_basicInfo"/>
+  </select>
+  
+  <!-- 根据id查询明细信息 -->
+  <select id="findBasicInfo" parameterType="com.datadriver.web.basicInfo.dto.BasicInfoDto" 
+  	resultType="com.datadriver.web.basicInfo.model.BasicInfo">
+		select 
+			<include refid="Base_basicInfo_List"/>
+		from p_one_paper po, p_basic_info p
+		where 1=1 
+			and po.PAPERID = p.PAPER_ID(+)
+   			and p.d_thru_date is null
+		    and p.PAPER_ID = #{0}
+		    and p.d_modify_date <![CDATA[<]]> (select max(pb.d_modify_date) from p_basic_info pb 
+		    	where #{0} = pb.PAPER_ID and p.d_thru_date is null)
+		    order by p.d_modify_date desc nulls last
+  </select>
+
+  <!-- 根据id查询one Paper信息 -->
+  <select id="selectPaperById" parameterType="String" 
+  	resultType="com.datadriver.web.onePaper.model.OnePaper">
+		select 
+			<include refid="Base_onePaper_List"/>
+		  from p_one_paper pp
+		 where 1 = 1
+		   and pp.paperid = #{0}
+  </select>
+  
+  <!-- 查询文档关联id -->
+  <select id="selectDocRelatedId" parameterType="String" resultType="java.util.HashMap">
+  	select 
+  	   <include refid="Base_select_DocRelated"/>
+  	from p_basic_info pc
+  	<include refid="Ex_where_DocRelated"/>
+  </select>
+  
+  <!-- 添加basicInfo基本信息 -->
+  <insert id="insertBasicInfo" parameterType="com.datadriver.web.basicInfo.model.BasicInfo">
+  	<selectKey resultType="String" order="BEFORE" keyProperty="basicInfoId">  
+    	select seq_p_basic_info_id.nextval as basicInfoId from dual  
+    </selectKey>
+    insert into p_basic_info <include refid="Base_insert_BasicInfo"/>
+    values <include refid="Ex_insert_BasicInfoVal"/>
+  </insert>
+  
+  <!-- 根据标识修改信息 -->
+  <update id="updateByIdBasicInfo" parameterType="com.datadriver.web.basicInfo.model.BasicInfo">
+  	update p_basic_info p
+     set 
+      <include refid="Base_update_BasicInfo"/>
+      where 1=1 and p.basicinfoid = #{basicInfoId,jdbcType=NUMERIC}
+  </update>
+  
+  <!-- 根据主键或外键删除（这里不做物理删除） -->
+  <update id="deleteByPrimaryKeyAll" parameterType="java.util.HashMap">
+	  	begin 
+	  		update p_basic_info p set p.D_THRU_DATE = sysdate where p.BASICINFOID = #{basicInfoId,jdbcType=NUMERIC};
+			<if test="basicInfoId !=null and basicInfoId !='' and maps != null and maps.size()>0">
+				update p_file f set f.v_thrudate = '1' where f.docid in 
+				<foreach collection="maps" open="(" separator="," close=")" item="item">
+					#{item,jdbcType=NUMERIC}
+				</foreach>
+				;
+			</if>
+	  	end;
+  </update>
+  
+  <!-- 添加文档 -->
+  <insert id="insertDocument" parameterType="com.datadriver.web.file.model.DocumentEntity">
+  	<selectKey resultType="String" order="BEFORE" keyProperty="fileId">  
+    	select seq_p_file.nextval as fileId from dual  
+    </selectKey>
+    insert into p_file 
+    	(DOCID, V_DOCNAME, V_UPLOADERID, V_UPLOADERNAME, V_UPDATE_USERID, V_UPDATE_USERNAME, 
+    	D_UPLOADTIME, V_DOCPATH, D_FROMDATE, D_UPDATE_TIME, V_THRUDATE)
+	values (#{fileId,jdbcType=NUMERIC}, #{fileName,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+			#{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, sysdate, #{filePath,jdbcType=VARCHAR}, 
+		sysdate, sysdate ,'0')
+  </insert>
+  
+  <!-- 编辑文档 -->
+  <update id="updateDocument" parameterType="com.datadriver.web.file.model.DocumentEntity">
+  	update p_file p 
+       set 
+       	<trim  suffixOverrides="," >  
+       			p.d_update_time = sysdate,
+       		<if test="fileName != null and fileName != ''">
+	       		p.v_docname = #{fileName,jdbcType=VARCHAR},
+       		</if>
+       		<if test="filePath != null and filePath != ''">
+	      		p.v_docpath = #{filePath,jdbcType=VARCHAR},
+       		</if>
+       		<if test="updateUserId != null and updateUserId != ''">
+	       		p.v_update_userid = #{updateUserId,jdbcType=VARCHAR},
+       		</if>
+       		<if test="updateUserName != null and updateUserName != ''">
+	       		p.v_update_username = #{updateUserName,jdbcType=VARCHAR},
+       		</if>
+       		<if test="thruDate != null and thruDate != ''">
+  				p.V_THRUDATE = 1,
+       		</if>
+       	</trim>
+	where p.docid = #{fileId,jdbcType=NUMERIC}
+  </update>
+  
+  <!-- 根据id查询单个Basic Info信息  sql 列表 -->
+  <sql id="Base_byIdObj_basic">
+	to_char(p.d_date_funding,'yyyy-MM-dd') d_date_funding,
+	p.BASICINFOID,
+	p.v_onep_bridge_loan,
+	p.v_is_approval_sign,
+	fn_tomoney(p.v_pre_money) v_pre_money,
+	fn_tomoney(p.v_post_money) v_post_money,
+	p.v_contacts_name,
+	p.v_contacts_email,
+	p.v_code_address_en，
+	p.v_contacts_phone,
+	p.v_expected_return,
+	p.v_development_stage,
+	p.v_latest_financial_statements,
+	p.v_investment_stage,
+	p.v_ldd_report,
+	p.v_fdd_report,
+	p.v_fdd_member,
+	p.v_deal_source,
+	p.v_business_description_ch,
+	p.v_business_description_en,
+	p.v_is_lead_investor,
+	p.v_is_stealth_mode,
+	p.v_group_chart,
+	p.v_is_usd_fund,
+	p.v_repletter,
+	p.v_wire_instruction,
+	p.v_transaction_docs,
+	p.v_approval_funding,
+	p.v_next_index,
+	p.V_ONSHORE_ENTITYCITY
+  </sql>
+  
+  <!-- 查询文档关联id 列表sql -->
+  <sql id="Base_select_DocRelated">
+	pc.v_onep_bridge_loan,
+	pc.v_latest_financial_statements,
+	pc.v_ldd_report,
+	pc.v_fdd_report,
+	pc.v_group_chart,
+	pc.v_wire_instruction,
+	pc.v_repletter,
+	pc.v_transaction_docs
+  </sql>
+  
+  <!-- 查询文档关联id where条件sql -->
+  <sql id="Ex_where_DocRelated">
+  	where 1=1 and pc.basicinfoid = #{0}
+  	and (pc.D_THRU_DATE = '0' or pc.D_THRU_DATE is null) 
+  </sql>
+  
+  <!-- 查询  basic Info列表 条件 -->
+  <sql id="Base_where_basicInfo">
+  	where 1=1 
+   		and po.v_thrudate != 1
+		and po.PAPERID = p.PAPER_ID(+)
+	<if test='portfolioNameCH != null and portfolioNameCH !=""'>
+		and po.V_CHNAME like '%${portfolioNameCH}%'
+	</if>
+	<if test='stageId != null and stageId!=""'>
+		and po.V_STAGE = #{stageId}
+	</if>
+	<if test='sectorId != null and sectorId!=""'>
+		and po.V_SECTOR = #{sectorId}
+	</if>
+	<if test='fundId != null and fundId!=""'>
+		and po.V_FUND = #{fundId}
+	</if>
+	order by p.d_modify_date desc nulls last
+  </sql>
+  
+  <!-- 查询  basic Info列表 -->
+  <sql id="Base_basicInfo_List">
+		po.V_CHNAME portfolioNameCH,
+		po.V_ENNAME portfolioNameEN,
+		p.BASICINFOID basicInfoId,
+		po.paperid paperId,
+		(select e.DIM_NME
+		   from e_dim e
+		  where e.DIM_CDE = po.v_sector
+		    and e.DIM_TYPE = 'sector') sectorName,
+		(select e.DIM_NME
+		   from e_dim e
+		  where e.DIM_CDE = po.V_STAGE
+		    and e.DIM_TYPE = 'stage') stageName,
+		(select f.V_FUND_NAME
+		   from p_fund_info f
+		  where f.L_FUND_ID = po.v_fund) fundName,
+		to_char(po.d_pdata, 'yyyy-MM-dd') signDate,
+		(select count(1)
+		   from p_basic_info pi
+		  where pi.paper_id = po.paperid
+		    and pi.d_thru_date is null) countsize
+  </sql>
+  
+  <!-- one Paper信息 sql(列) -->
+  <sql id="Base_onePaper_List" >  
+      pp.paperid paperid, pp.v_chname portfolionameCH, pp.v_enname portfolionameEN, 
+      to_char(pp.d_pdata, 'yyyy-mm-dd') dpdate, pp.V_SECTOR sectorid, pp.V_FUND fundid,
+      pp.v_partnerone dealpartnerone, pp.v_partnertwo dealpartnertwo, pp.v_partnerthree dealpartnerthi
+  </sql> 
+  
+   <!-- 添加字段的值 value -->
+  <sql id="Ex_insert_BasicInfoVal">
+  	(#{basicInfoId,jdbcType=NUMERIC}, #{paperId,jdbcType=NUMERIC}, to_date(#{fundingDate,jdbcType=DATE},'yyyy-MM-dd'), 
+  		#{onepBridgeLoan.fileId,jdbcType=VARCHAR}, #{isApprovalSign,jdbcType=VARCHAR}, 
+  		fn_moneytonumber(#{preMoney,jdbcType=VARCHAR}), fn_moneytonumber(#{postMoney,jdbcType=VARCHAR}),
+	 	#{contactsName,jdbcType=VARCHAR}, #{contactsEmail,jdbcType=VARCHAR}, #{codeAddressEN,jdbcType=VARCHAR},
+		#{contactsPhone,jdbcType=VARCHAR}, fn_moneytonumber(#{expectedReturn,jdbcType=VARCHAR}), 
+		#{developmentStage.code,jdbcType=VARCHAR}, #{latestFinancialStatements.fileId,jdbcType=VARCHAR}, 
+		#{investmentStage.code,jdbcType=VARCHAR}, #{lddReport.fileId,jdbcType=VARCHAR},
+		#{fddReport.fileId,jdbcType=VARCHAR}, #{fddMember.code,jdbcType=VARCHAR}, #{dealSource.code,jdbcType=VARCHAR}, 
+		#{businessDescriptionCH,jdbcType=VARCHAR}, #{businessDescriptionEN,jdbcType=VARCHAR}, 
+		#{isLeadInvestor,jdbcType=VARCHAR}, #{isStealthMode,jdbcType=VARCHAR}, #{groupChart.fileId,jdbcType=VARCHAR}, 
+		#{isUsdFund,jdbcType=VARCHAR}, #{wireInstruction.fileId,jdbcType=VARCHAR}, #{repLetter.fileId,jdbcType=VARCHAR}, 
+		#{transactionDocs.fileId,jdbcType=VARCHAR}, #{isApprovalFunding,jdbcType=VARCHAR}, 
+		sysdate, #{nextIndex,jdbcType=VARCHAR}, #{onshoreEntityCity,jdbcType=VARCHAR})
+  </sql>
+  
+  <!-- 添加字段sql -->
+  <sql id="Base_insert_BasicInfo">
+  	(basicinfoid, paper_id, d_date_funding, v_onep_bridge_loan, 
+  		v_is_approval_sign, v_pre_money, v_post_money, v_contacts_name, v_contacts_email, v_code_address_en, 
+		v_contacts_phone, v_expected_return, v_development_stage, v_latest_financial_statements, 
+		v_investment_stage, v_ldd_report, v_fdd_report, v_fdd_member, 
+		v_deal_source, v_business_description_ch, v_business_description_en, 
+		v_is_lead_investor, v_is_stealth_mode, v_group_chart, v_is_usd_fund, 
+		v_wire_instruction, v_repletter, v_transaction_docs, v_approval_funding, 
+		d_modify_date, v_next_index, V_ONSHORE_ENTITYCITY)
+  </sql>
+  
+  <!-- 修改条件 -->
+  <sql id="Base_update_BasicInfo">
+  	<trim  suffixOverrides="," >  
+  			p.d_modify_date = sysdate,
+			p.v_onep_bridge_loan = #{onepBridgeLoan.fileId,jdbcType=VARCHAR},
+			p.v_latest_financial_statements = #{latestFinancialStatements.fileId,jdbcType=VARCHAR},
+			p.v_ldd_report = #{lddReport.fileId,jdbcType=VARCHAR},
+			p.v_fdd_report = #{fddReport.fileId,jdbcType=VARCHAR},
+			p.v_group_chart = #{groupChart.fileId,jdbcType=VARCHAR},
+			p.v_wire_instruction = #{wireInstruction.fileId,jdbcType=VARCHAR},
+			p.v_repletter = #{repLetter.fileId,jdbcType=VARCHAR},
+			p.v_transaction_docs = #{transactionDocs.fileId,jdbcType=VARCHAR},
+         <if test="fundingDate != null and fundingDate != '' "> 
+			p.d_date_funding = to_date(#{fundingDate,jdbcType=DATE},'yyyy-MM-dd'), 
+         </if>  
+         <if test="isApprovalSign != null and isApprovalSign != '' "> 
+			p.v_is_approval_sign = #{isApprovalSign,jdbcType=VARCHAR},
+         </if> 
+         <if test="preMoney != null and preMoney != '' "> 
+            p.v_pre_money = fn_moneytonumber(#{preMoney,jdbcType=VARCHAR}),
+         </if> 
+         <if test="postMoney != null and postMoney != '' "> 
+			p.v_post_money =fn_moneytonumber(#{postMoney,jdbcType=VARCHAR}),
+         </if> 
+         <if test="contactsName != null and contactsName != '' "> 
+			p.v_contacts_name = #{contactsName,jdbcType=VARCHAR},
+         </if> 
+         <if test="contactsEmail != null and contactsEmail != '' "> 
+			p.v_contacts_email = #{contactsEmail,jdbcType=VARCHAR},
+         </if> 
+         <if test="codeAddressEN != null and codeAddressEN != '' "> 
+			p.v_code_address_en = #{codeAddressEN,jdbcType=VARCHAR},
+         </if> 
+         <if test="contactsPhone != null and contactsPhone != '' "> 
+			p.v_contacts_phone = #{contactsPhone,jdbcType=VARCHAR},
+         </if> 
+         <if test="expectedReturn != null and expectedReturn != '' "> 
+			p.v_expected_return = #{expectedReturn,jdbcType=VARCHAR},
+         </if> 
+         <if test="developmentStage.code != null and developmentStage.code != '' "> 
+			p.v_development_stage = #{developmentStage.code,jdbcType=VARCHAR},
+         </if> 
+         <if test="investmentStage.code != null and investmentStage.code != '' "> 
+			p.v_investment_stage = #{investmentStage.code,jdbcType=VARCHAR},
+         </if> 
+         <if test="fddMember.code != null and fddMember.code != '' "> 
+			p.v_fdd_member = #{fddMember.code,jdbcType=VARCHAR},
+         </if> 
+         <if test="dealSource.code != null and dealSource.code != '' "> 
+			p.v_deal_source = #{dealSource.code,jdbcType=VARCHAR},
+         </if> 
+         <if test="businessDescriptionCH != null and businessDescriptionCH != '' "> 
+			p.v_business_description_ch = #{businessDescriptionCH,jdbcType=VARCHAR},
+         </if> 
+         <if test="businessDescriptionEN != null and businessDescriptionEN != '' "> 
+			p.v_business_description_en = #{businessDescriptionEN,jdbcType=VARCHAR},
+         </if> 
+         <if test="isLeadInvestor != null and isLeadInvestor != '' "> 
+			p.v_is_lead_investor = #{isLeadInvestor,jdbcType=VARCHAR},
+         </if> 
+         <if test="isStealthMode != null and isStealthMode != '' "> 
+			p.v_is_stealth_mode = #{isStealthMode,jdbcType=VARCHAR},
+         </if> 
+         <if test="isUsdFund != null and isUsdFund != '' "> 
+			p.v_is_usd_fund = #{isUsdFund,jdbcType=VARCHAR},
+         </if> 
+         <if test="isApprovalFunding != null and isApprovalFunding != '' "> 
+			p.v_approval_funding = #{isApprovalFunding,jdbcType=VARCHAR},
+         </if> 
+         <if test="nextIndex != null and nextIndex != '' "> 
+			p.v_next_index = #{nextIndex,jdbcType=VARCHAR},
+         </if> 
+         <if test="onshoreEntityCity != null and onshoreEntityCity != '' "> 
+			p.V_ONSHORE_ENTITYCITY = #{onshoreEntityCity,jdbcType=VARCHAR},
+         </if> 
+         <!-- <if test="onepBridgeLoan.fileId != null and onepBridgeLoan.fileId != '' "> 
+         </if>
+         <if test="latestFinancialStatements.fileId != null and latestFinancialStatements.fileId != '' "> 
+         </if> 
+         <if test="lddReport.fileId != null and lddReport.fileId != '' "> 
+         </if> 
+         <if test="fddReport.fileId != null and fddReport.fileId != '' "> 
+         </if> 
+         <if test="groupChart.fileId != null and groupChart.fileId != '' "> 
+         </if>          
+         <if test="wireInstruction.fileId != null and wireInstruction.fileId != '' "> 
+         </if> 
+         <if test="repLetter.fileId != null and repLetter.fileId != '' "> 
+         </if> 
+         <if test="transactionDocs.fileId != null and transactionDocs.fileId != '' "> 
+         </if>  -->
+	 </trim>
+  </sql>
+</mapper>

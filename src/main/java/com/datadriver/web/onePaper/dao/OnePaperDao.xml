@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.onePaper.dao.OnePaperDao">
+	<!-- 查询列表 -->
+	<sql id="Base_Column_List">
+		to_char(L_ID) stuId, VC_NAME stuName, to_char(L_AGE) stuAge,
+		VC_EMAIL stuEmail, VC_ADDRESS stuAddress, VC_REMARK stuRemark, VC_TYPE stuType
+	</sql>
+
+	<!-- 查询One Paper -->
+	<select id="selectOnePaperList" parameterType="com.datadriver.web.onePaper.dto.OnePaperDto"
+		resultType="com.datadriver.web.onePaper.model.OnePaper">
+		select pp.paperid ,pp.v_chname portfolionameCH ,pp.v_enname
+		portfolionameEN,
+		to_char(pp.d_pdata,'yyyy-mm-dd') dpdate
+		,pp.n_valuation valuation,pp.v_attachment attachmentid,
+		e1.dim_nme
+		sectorname,e2.V_FUND_NAME fundname,e3.dim_nme stagename,e4.dim_nme
+		statusname
+		from p_one_paper pp
+		left join e_dim e1 on e1.dim_cde=pp.v_sector
+		left join p_fund_info e2 on e2.L_FUND_ID = pp.V_FUND
+		left join e_dim e3 on e3.dim_cde=pp.v_stage
+		left join e_dim e4 on e4.dim_cde=pp.v_Status
+		where 1=1 and pp.v_thrudate='0'
+		
+		<if test="portfolionameCH != null and portfolionameCH != ''">
+			and pp.v_chname like '%'||'${portfolionameCH}'||'%' 
+		</if>
+
+		<if test="portfolionameEN != null and portfolionameEN != ''">
+			and pp.v_enname like '%'||'${portfolionameEN}'||'%' 
+		</if>
+
+		<if test="sectorid != null and sectorid != ''">
+			and pp.v_sector= #{sectorid,jdbcType=VARCHAR} 
+		</if>
+
+		<if test="fundid != null and fundid != '' ">
+			and pp.v_fund = #{fundid,jdbcType=VARCHAR} 
+		</if>
+		order by pp.d_pdata
+	</select>
+
+	<!-- 获取文档表的主键值 -->
+	<select id="getDocid" resultType="String">
+		select SEQ_P_FILE.NEXTVAL from dual
+	</select>
+
+	<!-- 添加文档记录 -->
+	<insert id="saveDoc" parameterType="com.datadriver.web.onePaper.model.FileDoc">
+		insert into p_file (DOCID, V_DOCNAME, V_UPLOADERID,V_UPLOADERNAME,
+		D_UPLOADTIME, V_DOCPATH,D_FROMDATE,D_THRUDATE,V_THRUDATE
+		)
+		values (
+		#{docid,jdbcType=NUMERIC},
+		#{docname,jdbcType=VARCHAR},
+		#{uploaderid,jdbcType=VARCHAR},
+		#{uploadername,jdbcType=VARCHAR},
+		SYSDATE,
+		#{docpath,jdbcType=VARCHAR},
+		SYSDATE,
+		SYSDATE,'0'
+		)
+	</insert>
+
+
+	<!-- 添加onepaper记录 -->
+	<insert id="saveOnepaper" parameterType="com.datadriver.web.onePaper.dto.OnePaperDto">
+		insert into p_one_paper (PAPERID, V_CHNAME, V_ENNAME,D_PDATA,
+		N_VALUATION, V_SECTOR,V_FUND,V_STAGE,
+		V_STATUS,V_PARTNERONE,V_PARTNERTWO,V_PARTNERTHREE,
+		V_INVESTHESIS ,V_SOURCE,V_BUSINESS,V_MARKET,V_PRODUCT,
+		N_PRICING,N_FINANCIALS, V_CUSTOMERS,V_COMPETITORS,
+		V_TEAM,V_BOARD,V_DEALTERMS,V_ATTACHMENT,
+		V_THRUDATE,V_USERID,D_INDATE,D_UPPDATE)
+		values (
+		SEQ_P_ONEPAPERE.NEXTVAL,
+		#{portfolionameCH,jdbcType=VARCHAR},
+		#{portfolionameEN,jdbcType=VARCHAR},
+		#{vdpdate,jdbcType=DATE},
+		#{valuation,jdbcType=NUMERIC},
+		#{sectorid,jdbcType=VARCHAR},
+		#{fundid,jdbcType=VARCHAR},
+		#{stageid,jdbcType=VARCHAR},
+		#{statusid,jdbcType=VARCHAR},
+		#{dealpartnerone,jdbcType=VARCHAR},
+		#{dealpartnertwo,jdbcType=VARCHAR},
+		#{dealpartnerthi,jdbcType=VARCHAR},
+		#{investmentthesis,jdbcType=VARCHAR},
+		#{source,jdbcType=VARCHAR},
+		#{business,jdbcType=VARCHAR},
+		#{market,jdbcType=VARCHAR},
+		#{product,jdbcType=VARCHAR},
+		#{pricing,jdbcType=NUMERIC},
+		#{financials,jdbcType=NUMERIC},
+		#{customersid,jdbcType=VARCHAR},
+		#{competitorsname,jdbcType=VARCHAR},
+		#{teamid,jdbcType=VARCHAR},
+		#{boardid,jdbcType=VARCHAR},
+		#{dealterms,jdbcType=VARCHAR},
+		#{attachmentid,jdbcType=VARCHAR},
+		'0',
+		#{userid,jdbcType=VARCHAR},
+		SYSDATE,SYSDATE
+		)
+	</insert>
+
+	<!-- 根据paperid查询一条记录 -->
+	<select id="selectOnePaperById" parameterType="String"
+		resultType="com.datadriver.web.onePaper.dto.OnePaperDto">
+		select pp.paperid ,pp.v_chname portfolionameCH ,pp.v_enname
+		portfolionameEN,pp.v_source source,
+		pp.v_Investhesis investmentthesis,pp.v_sector sectorid,pp.v_fund fundid,pp.v_stage
+		stageid,
+		pp.v_status statusid,pp.v_business business,pp.v_market market,pp.v_product
+		product,
+		pp.v_partnerone dealpartnerone,pp.v_partnertwo dealpartnertwo,pp.v_partnerthree
+		dealpartnerthi,
+		trim(to_char(pp.n_pricing,'999,999,999,999,999.99')) pricing,trim(to_char(pp.n_financials,'999,999,999,999,999.99'))
+		financials,
+		pp.v_customers customersid,e5.dim_nme customersname,pp.v_team teamid,pp.v_board
+		boardid,
+		pp.v_competitors competitorsname,pp.v_dealterms dealterms,pp.d_pdata
+		dpdate,pp.v_attachment attachmentid,
+		to_char(pp.d_pdata,'yyyy-mm-dd') dpdate ,trim(to_char(pp.n_valuation,'999,999,999,999,999.99'))
+		valuation,
+		pf.v_docname attachmentname,pf.v_docpath attachmentload,
+		e1.dim_nme sectorname,e2.dim_nme fundname,e3.dim_nme stagename,e4.dim_nme
+		statusname
+		from p_one_paper pp
+		left join e_dim e1 on e1.dim_cde=pp.v_sector
+		left join e_dim e2 on e2.dim_cde=pp.v_fund
+		left join e_dim e3 on e3.dim_cde=pp.v_stage
+		left join e_dim e4 on e4.dim_cde=pp.v_Status
+		left join e_dim e5 on e5.dim_cde=pp.v_customers
+		left join p_file pf on pf.docid=pp.v_attachment
+		where 1=1 and pp.v_thrudate='0' and pp.paperid = #{0}
+	</select>
+
+	<!-- 修改Onepaper -->
+	<update id="updateOnepaper" parameterType="com.datadriver.web.onePaper.dto.OnePaperDto">
+		update p_one_paper
+		set
+		V_CHNAME = #{portfolionameCH,jdbcType=VARCHAR},
+		V_ENNAME =
+		#{portfolionameEN,jdbcType=VARCHAR},
+		D_PDATA = #{vdpdate,jdbcType=DATE},
+		N_VALUATION = #{valuation,jdbcType=NUMERIC},
+		V_SECTOR=#{sectorid,jdbcType=VARCHAR},
+		V_FUND=#{fundid,jdbcType=VARCHAR},
+		V_STAGE=#{stageid,jdbcType=VARCHAR},
+		V_STATUS=#{statusid,jdbcType=VARCHAR},
+		V_PARTNERONE=#{dealpartnerone,jdbcType=VARCHAR},
+		V_PARTNERTWO=#{dealpartnertwo,jdbcType=VARCHAR},
+		V_PARTNERTHREE=#{dealpartnerthi,jdbcType=VARCHAR},
+		V_INVESTHESIS=#{investmentthesis,jdbcType=VARCHAR},
+		V_SOURCE=#{source,jdbcType=VARCHAR},
+		V_BUSINESS=#{business,jdbcType=VARCHAR},
+		V_MARKET=#{market,jdbcType=VARCHAR},
+		V_PRODUCT=#{product,jdbcType=VARCHAR},
+		N_PRICING=#{pricing,jdbcType=NUMERIC},
+		N_FINANCIALS=#{financials,jdbcType=NUMERIC},
+		V_CUSTOMERS=#{customersid,jdbcType=VARCHAR},
+		V_COMPETITORS=#{competitorsname,jdbcType=VARCHAR},
+		V_TEAM= #{teamid,jdbcType=VARCHAR},
+		V_BOARD=#{boardid,jdbcType=VARCHAR},
+		V_DEALTERMS=#{dealterms,jdbcType=VARCHAR},
+		V_ATTACHMENT=#{attachmentid,jdbcType=VARCHAR},
+		V_USERID= #{userid,jdbcType=VARCHAR},
+		D_UPPDATE=SYSDATE
+		where PAPERID = #{paperid,jdbcType=NUMERIC}
+	</update>
+
+	<!-- 修改文档 -->
+	<update id="updateDoc" parameterType="com.datadriver.web.onePaper.model.FileDoc">
+		update p_file
+		set
+		V_DOCNAME =
+		#{docname,jdbcType=VARCHAR},
+		V_UPLOADERID =
+		#{uploaderid,jdbcType=VARCHAR},
+		V_UPLOADERNAME = #{uploadername,jdbcType=VARCHAR},
+		V_DOCPATH=
+		#{docpath,jdbcType=VARCHAR},
+		D_THRUDATE=SYSDATE,
+		V_THRUDATE='0'
+		where
+		DOCID =
+		#{docid,jdbcType=NUMERIC}
+	</update>
+
+	<!-- 删除onepaper -->
+	<update id="deleteOnepaper" parameterType="String">
+		update p_one_paper
+		set
+		V_THRUDATE = '1'
+		where paperid =#{0}
+	</update>
+
+	<!-- 删除Docid -->
+	<update id="deleteDoc" parameterType="String">
+		update p_file
+		set
+		V_THRUDATE
+		= '1'
+		where docid =#{0}
+	</update>
+
+
+	<select id="findPortfolionameCH" parameterType="String"
+		resultType="Integer">
+		select count(*) from p_one_paper pp
+		where 1=1 and pp.v_thrudate='0' and pp.v_chname = #{0}
+	</select>
+
+	<select id="findPortfolionameEN" parameterType="String"
+		resultType="Integer">
+		select count(*) from p_one_paper pp
+		where 1=1 and pp.v_thrudate='0' and pp.v_enname = #{0}
+	</select>
+	
+	<select id="updatePortfolionameCH" parameterType="com.datadriver.web.onePaper.dto.OnePaperDto"
+		resultType="Integer">
+		select count(*) from p_one_paper pp
+		where 1=1 and pp.v_thrudate='0' and pp.v_chname = #{portfolionameCH,jdbcType=VARCHAR} and pp.paperid not in (#{paperid,jdbcType=NUMERIC})
+	</select>
+
+	<select id="updatePortfolionameEN" parameterType="com.datadriver.web.onePaper.dto.OnePaperDto"
+		resultType="Integer">
+		select count(*) from p_one_paper pp
+		where 1=1 and pp.v_thrudate='0' and pp.v_enname = #{portfolionameEN,jdbcType=VARCHAR} and pp.paperid not in(#{paperid,jdbcType=NUMERIC})
+	</select>
+	
+	<!-- Customer信息 -->
+	<select id="selectCustomerDto" parameterType="com.datadriver.web.onePaper.dto.CustomerDto"
+		resultType="com.datadriver.web.onePaper.dto.CustomerDto">
+		select e.dim_cde customercode,e.dim_nme customername from e_dim e where
+		e.dim_type='customer'
+		order by e.dim_ord
+	</select>
+
+</mapper>

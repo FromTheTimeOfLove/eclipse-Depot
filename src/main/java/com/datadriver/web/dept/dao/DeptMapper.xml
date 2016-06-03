@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.dept.dao.DeptMapper">
+  <!-- 查询列表 -->
+  <sql id="Base_Column_List">
+		l_department_id deptid, vc_name deptname, vc_remark deptremark,l_Parent_Department_Id parent_deptid,
+		l_status status,l_leader_id leader_id,l_type type, l_resource_type resource_type,
+		l_dept_ord dept_ord,vc_assistant_email assistant_email
+	</sql>
+
+  <!-- 查询部门信息 -->
+  <select id="findDeptListByDto" parameterType="com.datadriver.web.dept.dto.DeptDto" 
+  	resultType="com.datadriver.web.dept.dto.DeptDto">
+		select t.l_department_id deptid,
+		t.vc_name deptname,
+		t.vc_remark deptremark,
+		t.l_parent_department_id parentdeptid,
+		s.vc_name parentdeptname,
+		t.l_leader_id leaderid,
+		t.l_status status,
+		t.l_type type,
+		t.l_dept_ord deptord,
+		t.l_resource_type resourcetype,
+		t.vc_assistant_email assistantemail
+	 from sys_department t 
+	 left join  sys_department s on t.l_parent_department_id=s.l_department_id
+     where 1=1 and t.l_status='0'
+     <if test="deptname != null and deptname != ''">
+     	and t.vc_name like concat(concat('%',#{deptname}),'%')
+     </if>
+     <if test="leaderid != null and leaderid != ''">
+     	and t.l_leader_id like concat(concat('%',#{leaderid}),'%')
+     </if>
+  </select>
+  
+    <!-- 添加部门信息 -->
+  <insert id="insertDept" parameterType="com.datadriver.web.dept.model.Dept">
+    insert into sys_department (l_department_id, vc_name, vc_remark,l_Parent_Department_Id, 
+    l_status, l_leader_id
+       <!--   , l_type,l_resource_type,l_dept_ord,vc_assistant_email--> 
+       )
+    values (
+      SEQ_T_DEPT_ID.NEXTVAL, 
+      #{deptname,jdbcType=VARCHAR}, 
+      #{deptremark,jdbcType=VARCHAR}, 
+      #{parentdeptid,jdbcType=NUMERIC}, 
+      #{status,jdbcType=NUMERIC},
+      #{leaderid,jdbcType=NUMERIC}
+        <!-- #{type,jdbcType=NUMERIC}),
+      #{resource_type,jdbcType=NUMERIC}),
+      #{dept_ord,jdbcType=NUMERIC}),
+      #{assistant_email,jdbcType=VARCHAR} --> 
+      ) 
+  </insert>
+  
+    <!-- 查询单个员工信息 -->
+  <select id="selectDeptById" parameterType="String" 
+  	resultType="com.datadriver.web.dept.dto.DeptDto">
+  	select 
+  		t.l_department_id deptid, t.vc_name deptname, t.vc_remark deptremark,t.l_Parent_Department_Id parentdeptid,
+		s.vc_name parentdeptname,t.l_status status,t.l_leader_id leaderid,t.l_type type, t.l_resource_type resourcetype,
+		t.l_dept_ord deptord,t.vc_assistant_email assistantemail
+  	from sys_department t left join  sys_department s on t.l_parent_department_id=s.l_department_id
+    where 1=1 and t.l_status='0'
+  	and t.l_department_id = #{0}
+  </select>
+  
+  <!-- 修改部门 -->
+  <update id="updateDept" parameterType="com.datadriver.web.dept.model.Dept">
+		update sys_department
+		set
+		vc_name = #{deptname,jdbcType=VARCHAR},
+		vc_remark = #{deptremark,jdbcType=VARCHAR},
+	  <!--	l_Parent_Department_Id = to_number(#{parentdeptid,jdbcType=NUMERIC}),-->
+	    l_Parent_Department_Id = #{parentdeptid,jdbcType=NUMERIC},
+		l_leader_id = #{leaderid,jdbcType=NUMERIC}
+		where l_department_id =
+		#{deptid,jdbcType=NUMERIC}
+	</update>
+	
+	  <!-- 删除部门 -->
+  <delete id="deleteDept" parameterType="String">
+  	delete from sys_department where l_department_id = #{deptid,jdbcType=NUMERIC}
+  </delete>
+	
+	<select id="findDeptPermissionTree"  resultType="com.datadriver.web.common.model.ZtreeNode">
+		select distinct sa.l_department_id id,
+                sa.l_parent_department_id pId,
+                sa.vc_name name,
+                sa.l_resource_type actionPin,
+                sa.l_type as permissionType,
+                decode(sa.l_parent_department_id, 0, 'true', 'false') open,
+                 'false' checked
+      from sys_department sa
+      where sa.l_status='0'
+     order by sa.l_department_id
+	</select>
+</mapper>

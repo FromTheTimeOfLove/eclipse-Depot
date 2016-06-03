@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.common.dao.DataDictionaryMapper">
+	<sql id="Base_Column_List">
+	   dim_cde as code,
+       dim_nme as display,
+       dim_type as type
+	</sql>
+
+	<select id="selectByType" parameterType="String" resultType="com.datadriver.web.common.model.DataDictionary">
+		select
+		<include refid="Base_Column_List" />
+		from e_dim
+		where dim_type = #{type,jdbcType=VARCHAR}
+		and dim_status='0'
+		order by dim_ord asc
+	</select>
+
+	<select id="selectUsers" resultType="com.datadriver.web.common.model.DataDictionary">
+		select t.l_user_id as code, t.vc_user_name as display from sys_user t
+	</select>
+	
+	<select id="selectFunds" resultType="com.datadriver.web.common.model.DataDictionary">
+		select f.l_fund_id code, f.v_fund_name display from p_fund_info f
+	</select>
+
+</mapper>

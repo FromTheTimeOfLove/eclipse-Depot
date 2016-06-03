@@ -1,0 +1,7 @@
+.dd-validate-error{
+	font-size:12px;
+	color:#d9534f;
+}
+.dd-validate-valid{
+	color:darken(#428bca, 6.5%);
+}

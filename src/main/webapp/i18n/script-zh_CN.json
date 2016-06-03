@@ -1,0 +1,94 @@
+{
+	"GENERAL":{
+		"ADD":"新增",
+		"EDIT":"编辑",
+		"DELETE":"删除",
+		"RESETPASS":"重置密码",
+		"ROLESET":"角色设置",
+		"LOADING":"加载中",
+		"NODATA":"无数据",
+		"SUCCESS":"操作成功",
+		"FAIL":"操作失败",
+		"ERROR":"操作错误",
+		"OK":"确认",
+		"CANCEL":"取消",
+		"NEXT":"下一步",
+		"CONFIRM":{
+			"GEN":"确认进行此操作？",
+			"ADD":"确认保存？",
+			"EDIT":"确认编辑？",
+			"DELETE":"确认删除？"
+		},
+		"SEESION_TIMEOUT":"登录超时，请重新登录",
+		"DATATABLE_PAGE":{
+			"lengthMenu":"显示_MENU_条",
+			"zeroRecords":"无数据记录",
+			"info":"当前第 _PAGE_ 页 (总共 _PAGES_ 页,共 _TOTAL_ 条)",
+			"infoEmpty":"",
+			"processing":"...",
+			"infoFiltered":"",
+			"paginate":{
+				"previous":"上一页",
+				"next":"下一页",
+				"page":"",
+				"pageOf":""
+			}
+		},
+		"COMMON_INDEX":"Index",
+		"COMMON_OPERATION":"Operation"
+	},
+	"LOGIN":{
+        "VALID":{
+			"LOGINNAME_NULL":"登录名为空",
+			"PASSWORD_NULL":"密码为空"
+		}
+    },
+	"USER":{
+        "SERNOVER":"在职",
+        "TURNOVER":"离职",
+        "ENABLE":"启用",
+        "DISABLE":"禁用",
+        "ROLESET":"角色设置",
+        "ALTER_PWD":"密码修改",
+        "VALID":{
+			"USERNAME_NULL":"用户名为空",
+			"LOGINNAME_NULL":"登录名为空",
+			"PASSWORD_NULL":"密码为空",
+			"USERTYPE_NULL":"用户类型为空",
+			"WORKNUMBER_NULL":"工号为空",
+			"NEW_PASSWORD_NULL":"新密码不能为空",
+			"TWICE_PASSWORD_NOT":"两次密码输入不一致",
+			"PASSWORD_LENGTH_ERROR":"密码长度需在5-10",
+			"PASSWORD_OLD_ERROR":"原密码错误"
+		}
+    },
+    "ROLE":{
+        "ENABLE":"启用",
+        "DISABLE":"禁用",
+        "PERMISSION":"权限设置",
+        "VALID":{
+			"ROLENAME_NULL":"角色名为空",
+			"ROLEGROUP_NULL":"角色组名为空"
+		}
+    },
+    "STUDENT":{
+        "STUDENTNAME":"姓名",
+        "STUDENTAGE":"年龄",
+        "STUDENTEMAIL":"邮箱",
+        "STUDENTADDRESS":"地址"
+    },
+    "ONEPAPER":{
+        "ADD":"Add One Paper",
+        "EDIT":"Edit One Paper",
+        "GO":"Go TS SIGNED"
+    },
+    "TSSIGNED":{
+        "ADD":"Add Ts Signed",
+        "EDIT":"Edit Ts Signed",
+        "GO":"Go Basic Info"
+    },
+    "BASICEXIT":{
+    	"ADD":"Add Exit Info",
+    	"EDIT":"Edit Exit Info"
+    }
+}

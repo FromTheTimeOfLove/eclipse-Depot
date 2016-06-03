@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="generator" content="HTML Tidy, see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Index</title>
+</head>
+<body>
+	<script type="text/javascript">
+		var currentLang = navigator.language; //NOT IE
+		var langType = "zh_CN";
+		if (!currentLang) {
+			//IE
+			currentLang = navigator.browserLanguage;
+		}
+		if (currentLang != null && currentLang != '') {
+			if (currentLang == 'en-us') {
+				langType = "en";
+			} else if (currentLang == 'zh_CN') {
+				langType = "zh_CN";
+			}
+		}
+		top.location.href = "rest/system/loginPage.do?langType=" + langType;
+	</script>
+</body>
+</html>

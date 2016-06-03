@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.equityInvestment.dao.EquityInvestmentMapper">
+	
+  <resultMap type="com.datadriver.web.equityInvestment.model.EquityInvestment" id="byIdEquityInvestmentObj">
+  	<result column="equityinvestment_id" property="equityInvestmentId"/>              
+	<result column="paper_id" property="paperId"/>         	      										
+	<result column="d_date_funding" property="fundingDate"/>                     	    
+	<result column="v_is_conditions" property="isConditions"/>                        
+	<result column="v_is_approval" property="isApproval"/>             	      				
+	<result column="v_is_round" property="isRound"/>                               	  
+	<result column="v_equity_sign_spa" property="equitySignSPA"/>                    	
+	<result column="v_equity_sign_spa" property="equitySignSPA"/>                     
+	<result column="v_pre_money" property="npreMoney"/>                            	  
+	<result column="v_post_money" property="npostMoney"/>                 	     			
+	<result column="v_usdfund_remark" property="usdFundRemark"/>                 	    
+	<result column="v_expected_remark" property="expectedRemark"/>               	    
+	<result column="v_equity_investment_stage" property="equityInvestmentStage"/>     
+	<result column="v_contacts_name" property="contactName"/>                         
+	<result column="v_contacts_email" property="contactEmail"/>                       
+	<result column="v_code_address_en" property="contactAddress"/>                    
+	<result column="v_contacts_phone" property="contactPhone"/>                       
+	<result column="v_equity_development_stage" property="equityDevelopmentStage"/>   
+	<result column="v_fdd_member" property="fddId"/>       	   												
+	<result column="v_bod" property="bodId"/>                         
+	<result column="v_equity_deal_source" property="equityDealSource"/>               
+  	<result column="v_equity_investment_status" property="equityInvestmentStatus"/>   
+	<result column="v_equity_investors" property="equityInvestors"/>      	       		
+	<result column="v_equity_series_type" property="equitySeriesType"/>               
+	<result column="v_equity_expected_exit" property="equityExpectedExit"/>     	    
+	<result column="v_equitytimetoexit" property="equityTimeToExit"/>               	
+	<result column="v_chinesermark" property="chineseRmark"/>                	       	
+	<result column="v_englishrmark" property="englishRmark"/>               	       	
+	<result column="v_is_equity_keyterms" property="isEquityKeyTerms"/>               
+	<result column="v_is_equity_financials" property="isEquityFinancials"/>         	
+	<result column="v_is_equity_broker" property="isEquityBroker"/>                   
+	<result column="v_equity_broker_remark" property="equityBrokerRemark"/>           
+	<result column="v_is_equity_announcement" property="isEquityAnnouncement"/>       
+	<result column="v_equity_rationale" property="equityRationale"/>                  
+	<result column="v_is_equity_stealth" property="isEquityStealth"/>                       	      		
+	<result column="v_equity_website" property="equityWebsite"/>                    
+	<result column="v_is_equity_leadinvestor" property="isEquityLeadInvestor"/>       
+	<result column="v_equity_onshore" property="equityOnshore"/>                 	    
+	<result column="v_is_equity_gdotorfcpa" property="isEquityGDOTOrFCPA"/>           
+	<result column="v_is_usdfund" property="isUSDFund"/>                              
+	<result column="v_is_atypical" property="isAtypical"/>                            
+	<result column="v_next_index" property="nextIndex"/>      
+	<association property="fcpaCheckingResult" column="V_FCPACHECKINGRESULT" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>   
+	<association property="indemnificationUpload" column="v_indemnification_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="transactionDocsUpload" column="v_transactiondocs_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="instructionUpload" column="v_instruction_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="repLetterUpload" column="v_repletter_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="memoUpload" column="v_memo_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="financialUpload" column="v_financial_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="capTableUpload" column="v_captable_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="fddReportUpload" column="v_fddreport_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="questionnaireUpload" column="v_questionnaire_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="legalOpinionUpload" column="v_legalopinion_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="groupChartUpload" column="v_groupchart_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="letterUpload" column="v_letter_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>
+	<association property="lddReportUpload" column="v_lddreport_id" select="selectFileObj"
+	 javaType="com.datadriver.web.file.model.DocumentEntity" >
+	</association>                        
+  </resultMap>
+  
+  <!-- 查询file -->
+  <select id="selectFileObj" parameterType="String" resultType="com.datadriver.web.file.model.DocumentEntity">
+  	select
+	  f.docid fileId,
+	  f.v_docname fileName,
+	  f.v_docpath filePath
+	from p_file f
+	where f.docid = #{0} and f.v_thrudate = 0
+  </select>
+  
+  <!-- 查询信息 -->
+  <select id="findEquityInvestmentListbyDto" parameterType="com.datadriver.web.equityInvestment.dto.EquityInvestmentDto" 
+  	resultType="com.datadriver.web.equityInvestment.model.EquityInvestmentPage">
+		select po.V_CHNAME portfolioNameCH,
+		       po.V_ENNAME portfolioNameEN,
+		       p.EQUITYINVESTMENT_ID equityInvestmentId,
+		       po.paperid paperId,
+		       (select e.DIM_NME
+		          from e_dim e
+		         where e.DIM_CDE = po.V_SECTOR
+		           and e.DIM_TYPE = 'sector') sectorName,
+		       (select e.DIM_NME
+		          from e_dim e
+		         where e.DIM_CDE = po.V_STAGE
+		           and e.DIM_TYPE = 'stage') stageName,
+		       (select f.V_FUND_NAME
+				   from p_fund_info f
+				  where f.L_FUND_ID = po.v_fund) fundName,
+		       to_char(p.d_date_funding, 'yyyy-MM-dd') fundingDate,
+		       to_char(po.d_pdata, 'yyyy-MM-dd') signDate,
+		       (select count(1) from P_EQUITY_INVESTMENT pi where pi.paper_id = po.paperid) countsize
+		  from p_one_paper po,
+		       (select *
+		          from (select row_number() over(partition by pe.PAPER_ID order by pe.d_update desc) rk,
+		                       pe.EQUITYINVESTMENT_ID,
+		                       pe.PAPER_ID,
+		                       pe.d_date_funding,
+		                       pe.d_update
+		                  from P_EQUITY_INVESTMENT pe 
+		                  where pe.v_thrudate = '0' )
+		         where rk = 1) p
+		 where 1 = 1
+		   and po.PAPERID = p.PAPER_ID(+)
+		   and po.v_thrudate='0'
+			<if test='portfolioNameCH != null and portfolioNameCH !=""'>
+				and po.V_CHNAME like '%${portfolioNameCH}%'
+			</if>
+			<if test='stageId != null and stageId!=""'>
+				and po.V_STAGE = #{stageId}
+			</if>
+			<if test='sectorId != null and sectorId!=""'>
+				and po.V_SECTOR = #{sectorId}
+			</if>
+			<if test='fundId != null and fundId!=""'>
+				and po.V_FUND = #{fundId}
+			</if>
+			order by p.d_update desc nulls last
+  </select>
+  
+    <!-- 根据id查询one Paper信息 -->
+  <select id="selectPaperById" parameterType="String" 
+  	resultType="com.datadriver.web.onePaper.model.OnePaper">
+		select 
+		  pp.paperid paperid, pp.v_chname portfolionameCH, pp.v_enname portfolionameEN, 
+	      to_char(pp.d_pdata, 'yyyy-mm-dd') dpdate, pp.V_SECTOR sectorid, pp.V_FUND fundid,
+	      pp.v_partnerone dealpartnerone, pp.v_partnertwo dealpartnertwo, pp.v_partnerthree dealpartnerthi		  from p_one_paper pp
+		 where 1 = 1
+		   and pp.paperid = #{0}
+  </select>
+  
+  <select id="queryEquityInvestmentObj" parameterType="String" resultMap="byIdEquityInvestmentObj">
+  	select equityinvestment_id,
+	       paper_id,
+	       to_char(d_date_funding,'yyyy-MM-dd') d_date_funding,
+	       v_indemnification_id,
+	       v_transactiondocs_id,
+	       v_instruction_id,
+	       v_repletter_id,
+	       v_is_conditions,
+	       v_is_approval,
+	       v_is_round,
+	       v_equity_sign_spa,
+	       v_memo_id,
+	       v_pre_money,
+	       v_post_money,
+	       v_usdfund_remark,
+	       v_expected_remark,
+	       v_equity_investment_stage,
+	       v_contacts_name,
+	       v_contacts_email,
+	       v_code_address_en,
+	       v_contacts_phone,
+	       v_equity_development_stage,
+	       v_financial_id,
+	       v_captable_id,
+	       v_fddreport_id,
+	       v_fdd_member,
+	       v_bod,
+	       v_equity_deal_source,
+	       v_equity_investment_status,
+	       v_equity_investors,
+	       v_equity_series_type,
+	       v_equity_expected_exit,
+	       v_equitytimetoexit,
+	       v_chinesermark,
+	       v_englishrmark,
+	       v_is_equity_keyterms,
+	       v_is_equity_financials,
+	       v_is_equity_broker,
+	       v_equity_broker_remark,
+	       v_is_equity_announcement,
+	       v_equity_rationale,
+	       v_equity_website,
+	       v_is_equity_stealth,
+	       v_is_equity_leadinvestor,
+	       v_equity_onshore,
+	       v_questionnaire_id,
+	       v_is_equity_gdotorfcpa,
+	       v_legalopinion_id,
+	       v_groupchart_id,
+	       v_letter_id,
+	       v_lddreport_id,
+	       v_is_usdfund,
+	       v_is_atypical,
+	       v_next_index,
+	       V_FCPACHECKINGRESULT
+	  from p_equity_investment
+	 where equityinvestment_id = #{0}
+	  	
+  </select>
+  
+  <!-- 添加文档 -->
+  <insert id="insertDocument" parameterType="com.datadriver.web.file.model.DocumentEntity">
+  	<selectKey resultType="String" order="BEFORE" keyProperty="fileId">  
+    	select seq_p_file.nextval as fileId from dual  
+    </selectKey>
+    insert into p_file 
+    	(DOCID, V_DOCNAME, V_UPLOADERID, V_UPLOADERNAME, V_UPDATE_USERID, V_UPDATE_USERNAME, 
+    	D_UPLOADTIME, V_DOCPATH, D_FROMDATE, D_UPDATE_TIME, V_THRUDATE)
+	values (#{fileId,jdbcType=NUMERIC}, #{fileName,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+			#{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, sysdate, #{filePath,jdbcType=VARCHAR}, 
+		sysdate, sysdate ,'0')
+  </insert>
+  
+  <!-- 编辑文档 -->
+  <update id="updateDocument" parameterType="com.datadriver.web.file.model.DocumentEntity">
+  	update p_file p 
+       set 
+       	<trim  suffixOverrides="," >  
+       			p.d_update_time = sysdate,
+       		<if test="fileName != null and fileName != ''">
+	       		p.v_docname = #{fileName,jdbcType=VARCHAR},
+       		</if>
+       		<if test="filePath != null and filePath != ''">
+	      		p.v_docpath = #{filePath,jdbcType=VARCHAR},
+       		</if>
+       		<if test="updateUserId != null and updateUserId != ''">
+	       		p.v_update_userid = #{updateUserId,jdbcType=VARCHAR},
+       		</if>
+       		<if test="updateUserName != null and updateUserName != ''">
+	       		p.v_update_username = #{updateUserName,jdbcType=VARCHAR},
+       		</if>
+       		<if test="thruDate != null and thruDate != ''">
+  				p.V_THRUDATE = #{thruDate,jdbcType=VARCHAR},
+       		</if>
+       	</trim>
+	where p.docid = #{fileId,jdbcType=NUMERIC}
+  </update>
+  
+  <!-- 更新数据 -->
+  <update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.equityInvestment.model.EquityInvestment">
+  	update p_equity_investment
+	   set 
+   		<trim  suffixOverrides="," >
+	       d_update                   = sysdate,
+         <if test="fundingDate != null and fundingDate != '' "> 
+        	d_date_funding = to_date(#{fundingDate,jdbcType=VARCHAR},'yyyy-mm-dd'),
+         </if>
+         <if test="indemnificationUpload.fileId != null and indemnificationUpload.fileId != '' "> 
+	       v_indemnification_id = #{indemnificationUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="transactionDocsUpload.fileId != null and transactionDocsUpload.fileId != '' "> 
+	       v_transactiondocs_id = #{transactionDocsUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="instructionUpload.fileId != null and instructionUpload.fileId != '' "> 
+	       v_instruction_id = #{instructionUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="repLetterUpload.fileId != null and repLetterUpload.fileId != '' "> 
+	       v_repletter_id = #{repLetterUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="isConditions != null and isConditions != '' "> 
+	       v_is_conditions            = #{isConditions,jdbcType=VARCHAR},
+         </if>
+         <if test="isApproval != null and isApproval != '' "> 
+	       v_is_approval              = #{isApproval,jdbcType=VARCHAR},
+         </if>
+         <if test="isRound != null and isRound != '' "> 
+	       v_is_round                 = #{isRound,jdbcType=VARCHAR},
+         </if>
+         <if test="equitySignSPA != null and equitySignSPA != '' "> 
+	       v_equity_sign_spa          = #{equitySignSPA,jdbcType=VARCHAR},
+         </if>
+         <if test="memoUpload.fileId != null and memoUpload.fileId != '' "> 
+	       v_memo_id                  = #{memoUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="dealNameRmark != null and dealNameRmark != '' "> 
+	       v_deal_name_ch             = #{dealNameRmark,jdbcType=VARCHAR},
+         </if>
+         <if test="dealCompanyRmark != null and dealCompanyRmark != '' "> 
+	       v_company_name_ch          = #{dealCompanyRmark,jdbcType=VARCHAR},
+         </if>
+         <if test="npreMoney != null and npreMoney != '' "> 
+	       v_pre_money                = fn_moneytonumber(#{npreMoney,jdbcType=VARCHAR}),
+         </if>
+         <if test="npostMoney != null and npostMoney != '' "> 
+	       v_post_money               = fn_moneytonumber(#{npostMoney,jdbcType=VARCHAR}),
+         </if>
+         <if test="sectorOrIndustry != null and sectorOrIndustry != '' "> 
+	       v_sector_industry          = #{sectorOrIndustry,jdbcType=VARCHAR},
+         </if>
+         
+         <if test="usdFundRemark != null and usdFundRemark != '' "> 
+	       v_usdfund_remark           = #{usdFundRemark,jdbcType=VARCHAR},
+         </if>
+         <if test="expectedRemark != null and expectedRemark != '' "> 
+	       v_expected_remark          = #{expectedRemark,jdbcType=VARCHAR},
+         </if>
+         
+         <if test="equityInvestmentStage != null and equityInvestmentStage != '' "> 
+	       v_equity_investment_stage  = #{equityInvestmentStage,jdbcType=VARCHAR},
+         </if>
+         <if test="contactName != null and contactName != '' "> 
+	       v_contacts_name            = #{contactName,jdbcType=VARCHAR},
+         </if>
+         <if test="contactEmail != null and contactEmail != '' "> 
+	       v_contacts_email           = #{contactEmail,jdbcType=VARCHAR},
+         </if>
+         <if test="contactAddress != null and contactAddress != '' "> 
+	       v_code_address_en          = #{contactAddress,jdbcType=VARCHAR},
+         </if>
+         <if test="contactPhone != null and contactPhone != '' "> 
+	       v_contacts_phone           = #{contactPhone,jdbcType=VARCHAR},
+         </if>
+         <if test="equityDevelopmentStage != null and equityDevelopmentStage != '' "> 
+	       v_equity_development_stage = #{equityDevelopmentStage,jdbcType=VARCHAR},
+         </if>
+         <if test="financialUpload.fileId != null and financialUpload.fileId != '' "> 
+	       v_financial_id             = #{financialUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="capTableUpload.fileId != null and capTableUpload.fileId != '' "> 
+	       v_captable_id              = #{capTableUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="fddReportUpload.fileId != null and fddReportUpload.fileId != '' "> 
+	       v_fddreport_id             = #{fddReportUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="fddId != null and fddId != '' "> 
+	       v_fdd_member               = #{fddId,jdbcType=VARCHAR},
+         </if>
+         <if test="bodId != null and bodId != '' "> 
+	       v_bod                      = #{bodId,jdbcType=VARCHAR},
+         </if>
+         <if test="equityDealSource != null and equityDealSource != '' "> 
+	       v_equity_deal_source       = #{equityDealSource,jdbcType=VARCHAR},
+         </if>
+         <if test="equityInvestmentStatus != null and equityInvestmentStatus != '' "> 
+	       v_equity_investment_status = #{equityInvestmentStatus,jdbcType=VARCHAR},
+         </if>
+         <if test="equityInvestors != null and equityInvestors != '' "> 
+	       v_equity_investors         = #{equityInvestors,jdbcType=VARCHAR},
+         </if>
+         <if test="equitySeriesType != null and equitySeriesType != '' "> 
+	       v_equity_series_type       = #{equitySeriesType,jdbcType=VARCHAR},
+         </if>
+         <if test="equityExpectedExit != null and equityExpectedExit != '' "> 
+	       v_equity_expected_exit     = #{equityExpectedExit,jdbcType=VARCHAR},
+         </if>
+         <if test="equityTimeToExit != null and equityTimeToExit != '' "> 
+	       v_equitytimetoexit         = #{equityTimeToExit,jdbcType=VARCHAR},
+         </if>
+         <if test="chineseRmark != null and chineseRmark != '' "> 
+	       v_chinesermark             = #{chineseRmark,jdbcType=VARCHAR},
+         </if>
+         <if test="englishRmark != null and englishRmark != '' "> 
+	       v_englishrmark             = #{englishRmark,jdbcType=VARCHAR},
+         </if>
+         <if test="isEquityKeyTerms != null and isEquityKeyTerms != '' "> 
+	       v_is_equity_keyterms       = #{isEquityKeyTerms,jdbcType=VARCHAR},
+         </if>
+         <if test="isEquityFinancials != null and isEquityFinancials != '' "> 
+	       v_is_equity_financials     = #{isEquityFinancials,jdbcType=VARCHAR},
+         </if>
+         <if test="isEquityBroker != null and isEquityBroker != '' "> 
+	       v_is_equity_broker         = #{isEquityBroker,jdbcType=VARCHAR},
+         </if>
+         <if test="equityBrokerRemark != null and equityBrokerRemark != '' "> 
+	       v_equity_broker_remark     = #{equityBrokerRemark,jdbcType=VARCHAR},
+         </if>
+         <if test="isEquityAnnouncement != null and isEquityAnnouncement != '' "> 
+	       v_is_equity_announcement   = #{isEquityAnnouncement,jdbcType=VARCHAR},
+         </if>
+         <if test="equityRationale != null and equityRationale != '' "> 
+	       v_equity_rationale         = #{equityRationale,jdbcType=VARCHAR},
+         </if>
+         <if test="equityWebsite != null and equityWebsite != '' "> 
+	       v_equity_website           = #{equityWebsite,jdbcType=VARCHAR},
+         </if>
+         <if test="isEquityStealth != null and isEquityStealth != '' "> 
+	       v_is_equity_stealth        = #{isEquityStealth,jdbcType=VARCHAR},
+         </if>
+         <if test="isEquityLeadInvestor != null and isEquityLeadInvestor != '' "> 
+	       v_is_equity_leadinvestor   = #{isEquityLeadInvestor,jdbcType=VARCHAR},
+         </if>
+         <if test="equityOnshore != null and equityOnshore != '' "> 
+	       v_equity_onshore           = #{equityOnshore,jdbcType=VARCHAR},
+         </if>
+         <if test="questionnaireUpload.fileId != null and questionnaireUpload.fileId != '' "> 
+	       v_questionnaire_id         = #{questionnaireUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="isEquityGDOTOrFCPA != null and isEquityGDOTOrFCPA != '' "> 
+	       v_is_equity_gdotorfcpa     = #{isEquityGDOTOrFCPA,jdbcType=VARCHAR},
+         </if>
+         <if test="legalOpinionUpload.fileId != null and legalOpinionUpload.fileId != '' "> 
+	       v_legalopinion_id          = #{legalOpinionUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="groupChartUpload.fileId != null and groupChartUpload.fileId != '' "> 
+	       v_groupchart_id            = #{groupChartUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="letterUpload.fileId != null and letterUpload.fileId != '' "> 
+	       v_letter_id                = #{letterUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="lddReportUpload.fileId != null and lddReportUpload.fileId != '' "> 
+	       v_lddreport_id             = #{lddReportUpload.fileId,jdbcType=VARCHAR},
+         </if>
+         <if test="isUSDFund != null and isUSDFund != '' "> 
+	       v_is_usdfund               = #{isUSDFund,jdbcType=VARCHAR},
+         </if>
+         <if test="isAtypical != null and isAtypical != '' "> 
+	       v_is_atypical              = #{isAtypical,jdbcType=VARCHAR},
+         </if>
+         <if test="nextIndex != null and nextIndex != '' "> 
+	       v_next_index               = #{nextIndex,jdbcType=VARCHAR},
+         </if>
+         <if test="fcpaCheckingResult.fileId != null and fcpaCheckingResult.fileId != '' "> 
+	       V_FCPACHECKINGRESULT		  = #{fcpaCheckingResult.fileId,jdbcType=VARCHAR},
+         </if>
+       </trim>
+	 where equityinvestment_id = #{equityInvestmentId,jdbcType=VARCHAR}
+  </update>
+  <!-- 插入数据 -->
+  <insert id="insertSelective" parameterType="com.datadriver.web.equityInvestment.model.EquityInvestment">
+  	<selectKey resultType="String" order="BEFORE" keyProperty="equityInvestmentId">
+  	select SEQ_P_EQUITY_INVESTMENT_ID.NEXTVAL from dual
+  	</selectKey>
+  	insert into p_equity_investment
+		  (equityinvestment_id,
+		   paper_id,
+		   d_date_funding,
+		   v_indemnification_id,
+		   v_transactiondocs_id,
+		   v_instruction_id,
+		   v_repletter_id,
+		   v_is_conditions,
+		   v_is_approval,
+		   v_is_round,
+		   v_equity_sign_spa,
+		   v_memo_id,
+		   v_deal_name_ch,
+		   v_company_name_ch,
+		   v_pre_money,
+		   v_post_money,
+		   v_sector_industry,
+		   v_usdfund_remark,
+		   v_expected_remark,
+		   v_equity_investment_stage,
+		   v_contacts_name,
+		   v_contacts_email,
+		   v_code_address_en,
+		   v_contacts_phone,
+		   v_equity_development_stage,
+		   v_financial_id,
+		   v_captable_id,
+		   v_fddreport_id,
+		   v_fdd_member,
+		   v_bod,
+		   v_equity_deal_source,
+		   v_equity_investment_status,
+		   v_equity_investors,
+		   v_equity_series_type,
+		   v_equity_expected_exit,
+		   v_equitytimetoexit,
+		   v_chinesermark,
+		   v_englishrmark,
+		   v_is_equity_keyterms,
+		   v_is_equity_financials,
+		   v_is_equity_broker,
+		   v_equity_broker_remark,
+		   v_is_equity_announcement,
+		   v_equity_rationale,
+		   v_equity_website,
+		   v_is_equity_stealth,
+		   v_is_equity_leadinvestor,
+		   v_equity_onshore,
+		   v_questionnaire_id,
+		   v_is_equity_gdotorfcpa,
+		   v_legalopinion_id,
+		   v_groupchart_id,
+		   v_letter_id,
+		   v_lddreport_id,
+		   v_is_usdfund,
+		   v_is_atypical,
+		   v_next_index,
+		   V_FCPACHECKINGRESULT,
+		   d_update,
+		   d_indate,
+		   v_thrudate)
+		values
+		  (#{equityInvestmentId,jdbcType=NUMERIC},
+		   	#{paperId,jdbcType=VARCHAR},
+			to_date(#{fundingDate,jdbcType=VARCHAR},'yyyy-mm-dd'),
+			#{indemnificationUpload.fileId,jdbcType=VARCHAR},
+			#{transactionDocsUpload.fileId,jdbcType=VARCHAR},
+			#{instructionUpload.fileId,jdbcType=VARCHAR},
+			#{repLetterUpload.fileId,jdbcType=VARCHAR},
+			#{isConditions,jdbcType=VARCHAR},
+			#{isApproval,jdbcType=VARCHAR},
+			#{isRound,jdbcType=VARCHAR},
+			#{equitySignSPA,jdbcType=VARCHAR},
+			#{memoUpload.fileId,jdbcType=VARCHAR},
+			#{dealNameRmark,jdbcType=VARCHAR},
+			#{dealCompanyRmark,jdbcType=VARCHAR},
+			#{npreMoney,jdbcType=VARCHAR},
+			#{npostMoney,jdbcType=VARCHAR},
+			#{sectorOrIndustry,jdbcType=VARCHAR},
+			#{usdFundRemark,jdbcType=VARCHAR},
+			#{expectedRemark,jdbcType=VARCHAR},
+			#{equityInvestmentStage,jdbcType=VARCHAR},
+			#{contactName,jdbcType=VARCHAR},
+			#{contactEmail,jdbcType=VARCHAR},
+			#{contactAddress,jdbcType=VARCHAR},
+			#{contactPhone,jdbcType=VARCHAR},
+			#{equityDevelopmentStage,jdbcType=VARCHAR},
+			#{financialUpload.fileId,jdbcType=VARCHAR},
+			#{capTableUpload.fileId,jdbcType=VARCHAR},
+			#{fddReportUpload.fileId,jdbcType=VARCHAR},
+			#{fddId,jdbcType=VARCHAR},
+			#{bodId,jdbcType=VARCHAR},
+			#{equityDealSource,jdbcType=VARCHAR},
+			#{equityInvestmentStatus,jdbcType=VARCHAR},
+			#{equityInvestors,jdbcType=VARCHAR},
+			#{equitySeriesType,jdbcType=VARCHAR},
+			#{equityExpectedExit,jdbcType=VARCHAR},
+			#{equityTimeToExit,jdbcType=VARCHAR},
+			#{chineseRmark,jdbcType=VARCHAR},
+			#{englishRmark,jdbcType=VARCHAR},
+			#{isEquityKeyTerms,jdbcType=VARCHAR},
+			#{isEquityFinancials,jdbcType=VARCHAR},
+			#{isEquityBroker,jdbcType=VARCHAR},
+			#{equityBrokerRemark,jdbcType=VARCHAR},
+			#{isEquityAnnouncement,jdbcType=VARCHAR},
+			#{equityRationale,jdbcType=VARCHAR},
+			#{equityWebsite,jdbcType=VARCHAR},
+			#{isEquityStealth,jdbcType=VARCHAR},
+			#{isEquityLeadInvestor,jdbcType=VARCHAR},
+			#{equityOnshore,jdbcType=VARCHAR},
+			#{questionnaireUpload.fileId,jdbcType=VARCHAR},
+			#{isEquityGDOTOrFCPA,jdbcType=VARCHAR},
+			#{legalOpinionUpload.fileId,jdbcType=VARCHAR},
+			#{groupChartUpload.fileId,jdbcType=VARCHAR},
+			#{letterUpload.fileId,jdbcType=VARCHAR},
+			#{lddReportUpload.fileId,jdbcType=VARCHAR},
+			#{isUSDFund,jdbcType=VARCHAR},
+			#{isAtypical,jdbcType=VARCHAR},
+			#{nextIndex,jdbcType=VARCHAR},
+			#{fcpaCheckingResult.fileId,jdbcType=VARCHAR},
+		   sysdate,
+		   sysdate,
+		   '0')
+  </insert>
+  <!-- 查询文档关联id 列表sql -->
+  <sql id="Base_select_DocRelated">
+	pc.v_memo_id,
+	pc.v_financial_id,
+	pc.v_captable_id,
+	pc.v_fddreport_id,
+	pc.v_questionnaire_id,
+	pc.v_groupchart_id,
+	pc.v_lddreport_id,
+	pc.V_FCPACHECKINGRESULT,
+	pc.v_indemnification_id,
+	pc.v_transactiondocs_id,
+	pc.v_instruction_id,
+	pc.v_repletter_id,
+	pc.v_legalopinion_id,
+	pc.v_repletter_id
+  </sql>
+  
+  <!-- 查询文档关联id where条件sql -->
+  <sql id="Ex_where_DocRelated">
+  	where 1=1 and pc.EQUITYINVESTMENT_ID = #{0}
+  	and (pc.v_THRUDATE = '0' or pc.v_THRUDATE is null) 
+  </sql>
+  <!-- 查询文档关联id -->
+  <select id="selectDocRelatedId" parameterType="String" resultType="java.util.HashMap">
+  	select 
+  	   <include refid="Base_select_DocRelated"/>
+  	from p_equity_investment pc
+  	<include refid="Ex_where_DocRelated"/>
+  </select>
+  <!-- 逻辑删除EquityInvestment -->
+  <update id="deleteByPrimaryKeyAll" parameterType="java.util.HashMap">
+	  	begin 
+	  		update p_equity_investment p set p.v_thrudate = '1' where p.equityinvestment_id = #{equityInvestmentId,jdbcType=VARCHAR};
+			<if test="equityInvestmentId !=null and equityInvestmentId !='' and maps != null and maps.size()>0">
+				update p_file f set f.v_thrudate = '1' where f.docid in 
+				<foreach collection="maps" open="(" separator="," close=")" item="item">
+					#{item,jdbcType=NUMERIC}
+				</foreach>
+				;
+			</if>
+	  	end;
+  </update>
+  <!-- 查询加号下的数据 -->
+  <select id="findEquityInvestmentByPaper" parameterType="String" resultType="com.datadriver.web.equityInvestment.model.EquityInvestmentPage">
+  	select po.V_CHNAME portfolioNameCH,
+           po.V_ENNAME portfolioNameEN,
+           p.EQUITYINVESTMENT_ID equityInvestmentId,
+           po.paperid paperId,
+           (select e.DIM_NME
+              from e_dim e
+             where e.DIM_CDE = po.V_SECTOR
+               and e.DIM_TYPE = 'sector') sectorName,
+           (select e.DIM_NME
+              from e_dim e
+             where e.DIM_CDE = po.V_STAGE
+               and e.DIM_TYPE = 'stage') stageName,
+           (select f.V_FUND_NAME
+			   from p_fund_info f
+			  where f.L_FUND_ID = po.v_fund) fundName,
+           to_char(p.d_date_funding, 'yyyy-MM-dd') fundingDate,
+           to_char(po.d_pdata, 'yyyy-MM-dd') signDate,
+           (select count(1) from P_EQUITY_INVESTMENT pi where pi.paper_id = po.paperid) countsize
+      from p_one_paper po,P_EQUITY_INVESTMENT p
+     where po.PAPERID = p.PAPER_ID
+       and po.v_thrudate='0'
+       and p.paper_id = (select p.paper_id from P_EQUITY_INVESTMENT p where p.equityinvestment_id = #{equityInvestmentId})
+       and p.equityinvestment_id != #{equityInvestmentId}
+  </select>
+  
+  <!-- 查询  ComPliance - Confirmation Team -->
+	<select id="selectLisgaggStr" parameterType="String" resultType="String">
+		select wm_concat(pn.v_content_name || '=' || pn.v_content_value) contentNameVal
+		  from p_note_checklist_confirmation pn
+		 where 1 = 1
+		   and pn.v_content_module = '1'
+		   and pn.v_foreign_key = #{0}
+		   and pn.v_content_team_type = #{1}
+	</select>
+  <!-- 根据外键标识删除 -->
+	<delete id="deleteTeam" parameterType="String">
+		delete from P_NOTE_CHECKLIST_CONFIRMATION p where p.V_FOREIGN_KEY = #{0} and p.V_CONTENT_module = '1'
+	</delete>
+  <!-- 保存 ComPliance - Confirmation Team -->
+	<insert id="insertTeam" parameterType="java.util.HashMap">
+		insert into P_NOTE_CHECKLIST_CONFIRMATION(v_pnote_ck_conf_id, v_foreign_key, v_content_name, v_content_value, v_content_team_type, v_content_module)
+		 select SEQ_P_NOTE_CK_CONFIRMATION.nextval,A.* from (
+				<foreach collection="maps" index="key" item="item"  separator="UNION ALL">
+					SELECT
+						#{foreignKey,jdbcType=NUMERIC},
+		            	#{key,jdbcType=VARCHAR},
+		            	#{item,jdbcType=VARCHAR},
+		            	#{teamType,jdbcType=VARCHAR},
+		            	#{module,jdbcType=VARCHAR}
+		            from dual 
+				</foreach>
+			) A
+	</insert>
+</mapper>

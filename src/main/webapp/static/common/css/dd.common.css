@@ -1,0 +1,193 @@
+body, body.full-height-layout #page-wrapper, body.full-height-layout #wrapper, html {
+	height: 100%;
+}
+
+#page-wrapper {
+	padding: 0 15px;
+	min-height: auto;
+	height: 100%;
+}
+
+.J_iframe {
+	padding:0;
+	margin: 0;
+	background-color: #FFFFFF;
+	overflow-x: hidden;
+	border: 0;
+}
+
+.iframe-body {
+	background-color: #FFFFFF;
+}
+
+.page-content {
+	padding-top: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	height: 100% !important;
+}
+
+.page-top {
+	box-shadow: 0 0 0 0 !important;
+}
+
+.content-tabs {
+	position: relative;
+	height: 42px;
+	background: #FFFFFF;
+	line-height: 40px;
+	border-bottom: solid 2px #2b3643;
+}
+
+.content-tabs .roll-nav, .page-tabs-list {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	color: #999;
+	z-index: 2;
+	top: 0;
+}
+
+.content-tabs .roll-left {
+	left: 0;
+	border-right: solid 1px #eee;
+}
+
+.content-tabs .roll-right {
+	right: 0;
+	border-left: solid 1px #eee;
+}
+
+.content-tabs button {
+	background: #fff;
+	border: 0;
+	height: 40px;
+	width: 40px;
+	outline: 0;
+}
+
+.content-tabs button:hover {
+	background: #fafafa;
+}
+
+nav.page-tabs {
+	margin-left: 40px;
+	width: 100000px;
+	height: 40px;
+	overflow: hidden;
+}
+
+nav.page-tabs .page-tabs-content {
+	float: left;
+}
+
+.page-tabs a {
+	display: block;
+	float: left;
+	border-right: solid 1px #eee;
+	padding: 0 15px;
+	text-decoration: none;
+}
+
+.page-tabs a i:hover {
+	color: #c00;
+	text-decoration: none;
+}
+
+.content-tabs .roll-nav:hover, .page-tabs a:hover {
+	color: #777;
+	background: #f2f2f2;
+	cursor: pointer;
+}
+
+.roll-right.J_tabRight {
+	right: 140px;
+}
+
+.roll-right.btn-group {
+	right: 60px;
+	width: 80px;
+	padding: 0;
+}
+
+.roll-right.btn-group button {
+	width: 80px;
+}
+
+.roll-right.J_tabExit {
+	background: #fff;
+	height: 40px;
+	width: 70px;
+	outline: 0;
+}
+
+.dropdown-menu-right {
+	left: auto;
+}
+
+#content-main {
+	height: calc(100% - 80px);
+	overflow: hidden;
+}
+
+.fixed-nav #content-main {
+	height: calc(100% - 80px);
+	overflow: hidden;
+}
+
+.page-tabs a {
+	color: #999;
+}
+
+.page-tabs a i {
+	color: #ccc;
+}
+
+.page-tabs a.active {
+	background: #2b3643;
+	color: #a7b1c2;
+}
+
+.page-tabs a.active i:hover, .page-tabs a.active:hover {
+	background: #2b3643;
+	color: #fff;
+}
+
+.dropdown-menu-right {
+	left: auto;
+}
+
+.dropdown-menu {
+	border: medium none;
+	display: none;
+	float: left;
+	font-size: 12px;
+	left: 0;
+	list-style: none outside none;
+	padding: 0;
+	position: absolute;
+	text-shadow: none;
+	top: 100%;
+	z-index: 1000;
+	border-radius: 0;
+	box-shadow: 0 0 3px rgba(86, 96, 117, .3);
+}
+
+.caret {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: 2px;
+	vertical-align: middle;
+	border-top: 4px dashed;
+	border-top: 4px solid\9;
+	border-right: 4px solid transparent;
+	border-left: 4px solid transparent;
+}
+
+.theme-panel{
+	margin-top:10px !important;
+}
+
+

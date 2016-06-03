@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.system.dao.SystemrPermissionActionMapper">
+	<sql id="Base_Column_List">
+		l_action_id as actionId,
+		l_parent_action_id as actionParentId,
+		m_pin as actionPin
+		vc_name as actionName,
+		vc_code as actionCode,
+		vc_url as actionUrl
+		vc_icon as actionIcon
+		vc_type as actionType,
+		vc_remark as actionRemark,
+		vc_classe_name
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="String" resultType="com.datadriver.web.system.model.SystemPermissionAction">
+		select
+		<include refid="Base_Column_List" />
+		from sys_action
+		where l_action_id = #{actionId}
+	</select>
+
+	<select id="selectBySelective" parameterType="java.util.HashMap" resultType="com.datadriver.web.system.model.SystemPermissionAction">
+		select distinct
+		t1.l_action_id as actionId,
+		t1.l_parent_action_id as actionParentId,
+		t1.m_pin as actionPin,
+		t1.vc_name as actionName,
+		t1.vc_code as actionCode,
+		t1.vc_url as actionUrl,
+		t1.vc_icon as
+		actionIcon,
+		t1.vc_type as actionType,
+		t1.vc_remark as actionRemark,
+		t1.vc_classe_name
+		from sys_action t1,
+		sys_role_action t2,
+		sys_user_role t3
+		where t1.l_action_id=t2.l_action_id
+		and t1.l_status='0'
+		and
+		t2.l_role_id=t3.l_role_id
+		<if test="userId != null">
+			and t3.l_user_id=#{userId}
+		</if>
+		<if test="actionType != null">
+			and t1.vc_type=#{actionType}
+		</if>
+		<if test="roleId != null">
+			and t2.l_role_id=#{roleId}
+		</if>
+		order by t1.m_pin asc
+	</select>
+
+	<select id="selectByRoleId" parameterType="String" resultType="com.datadriver.web.system.model.SystemPermissionAction">
+		select distinct
+		t1.l_action_id as actionId,
+		t1.l_parent_action_id as actionParentId,
+		t1.m_pin as actionPin,
+		t1.vc_name as actionName,
+		t1.vc_code as actionCode,
+		t1.vc_url as actionUrl,
+		t1.vc_icon as actionIcon,
+		t1.vc_type as actionType,
+		t1.vc_remark as actionRemark,
+		t1.vc_classe_name
+		from sys_action t1,
+		sys_role_action t2
+		where
+		t1.l_action_id=t2.l_action_id
+		and t1.l_status='0'
+		and
+		t2.l_role_id=#{roleId}
+	</select>
+
+	<select id="selectByUserId" parameterType="String" resultType="com.datadriver.web.system.model.SystemPermissionAction">
+		select distinct
+		t1.l_action_id as actionId,
+		t1.l_parent_action_id as actionParentId,
+		t1.m_pin as actionPin,
+		t1.vc_name as actionName,
+		t1.vc_code as actionCode,
+		t1.vc_url as actionUrl,
+		t1.vc_icon as actionIcon,
+		t1.vc_type as actionType,
+		t1.vc_remark as actionRemark,
+		t1.vc_classe_name
+		from sys_action t1,
+		sys_role_action t2,
+		sys_user_role t3
+		where t1.l_action_id=t2.l_action_id
+		and t1.l_status='0'
+		and t2.l_role_id=t3.l_role_id
+		and t3.l_user_id=#{userId}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="String">
+		delete from
+		sys_action
+		where l_action_id = #{actionId}
+	</delete>
+	<insert id="insert" parameterType="com.datadriver.web.system.model.SystemPermissionAction">
+		insert into sys_action
+		(
+		l_action_id,
+		l_parent_action_id,
+		m_pin,
+		vc_name,
+		vc_code,
+		vc_url,
+		vc_icon,
+		vc_type,
+		l_status,
+		vc_remark,
+		vc_classe_name
+		)
+		values
+		(
+		SEQ_SYS_ACTION_ID.NEXTVAL,
+		#{actionParentId},
+		#{actionPin},
+		#{actionName},
+		#{actionCode},
+		#{actionUrl},
+		#{actionIcon},
+		#{actionType},
+		'0',
+		#{actionRemark},
+		#{actionClassName}
+		)
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.datadriver.web.system.model.SystemPermissionAction">
+		update sys_action
+		<set>
+			<if test="actionParentId != null">
+				l_parent_action_id = #{actionParentId},
+			</if>
+			<if test="actionPin != null">
+				m_pin = #{actionPin},
+			</if>
+			<if test="actionName != null">
+				vc_name = #{actionName},
+			</if>
+			<if test="actionCode != null">
+				vc_code = #{actionCode},
+			</if>
+			<if test="actionUrl != null">
+				vc_url = #{actionUrl},
+			</if>
+			<if test="actionIcon != null">
+				vc_icon = #{actionIcon},
+			</if>
+			<if test="actionType != null">
+				vc_type = #{actionType},
+			</if>
+			<if test="actionStatus != null">
+				l_status = #{actionStatus},
+			</if>
+			<if test="actionRemark != null">
+				vc_remark = #{actionRemark},
+			</if>
+			<if test="actionClassName != null">
+				vc_classe_name = #{actionClassName}
+			</if>
+		</set>
+		where l_action_id = #{actionId}
+	</update>
+
+	<update id="updateByPrimaryKey" parameterType="com.datadriver.web.system.model.SystemPermissionAction">
+		update sys_action
+		set
+		l_parent_action_id=#{actionParentId},
+		m_pin=#{actionPin},
+		vc_name=#{actionName},
+		vc_code=#{actionCode},
+		vc_url=#{actionUrl},
+		vc_icon=#{actionIcon},
+		vc_type=#{actionType},
+		l_status= #{actionStatus},
+		vc_remark= #{actionRemark},
+		vc_classe_name= #{actionClassName},
+		where l_action_id =
+		#{actionId}
+	</update>
+
+</mapper>

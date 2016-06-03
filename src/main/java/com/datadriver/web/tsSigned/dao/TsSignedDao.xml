@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.datadriver.web.tsSigned.dao.TsSignedDao">
+	<!-- 查询列表 -->
+	<sql id="Base_Column_List">
+		to_char(L_ID) stuId, VC_NAME stuName, to_char(L_AGE) stuAge,
+		VC_EMAIL stuEmail, VC_ADDRESS stuAddress, VC_REMARK stuRemark, VC_TYPE stuType
+	</sql>
+
+	<!-- 分页查询 -->
+	<select id="selectTsSignedListbyDto" parameterType="com.datadriver.web.tsSigned.dto.TsSignedDto"
+		resultType="com.datadriver.web.tsSigned.model.TsSigned">
+		select t.SIGNID tsSignedId,
+		p.paperid paperId,
+		fn_tomoney(t.N_INVESTAMOUNT) investmentAmount,
+		t.V_BRIDGELOAN bridgeLoan,
+		to_char(t.D_INVESTDATE,'yyyy-mm-dd') investDate,
+		fn_tomoney(t.N_AMOUNT) amount,
+		to_char(p.d_pdata,'yyyy-mm-dd') signDate,
+		e1.dim_nme sectorName,
+		e2.V_FUND_NAME fundName,
+		e3.dim_nme typeName,
+		e4.dim_nme typeSecurityName,
+		e5.dim_nme stageName,
+		t.V_PARTNERONE dealPartnerOne,
+		t.V_PARTNERTWO dealPartnerTwo,
+		t.V_PARTNERTHREE dealPartnerThi,
+		t.V_OWNERSHIP ownership,
+		t.V_OWNERSHIPREMARK ownerShipRemark,
+		t.V_PREFERENCE preference,
+		t.V_PREFERENCEREMARK preferenceRemark,
+		t.V_REDEMPTION redemption,
+		t.V_REDEMPTIONREMARK redemptionRemark,
+		t.V_BOARDIRECTOR boardDirector,
+		t.V_BOARDIRECTOREMARK boarDirectoRemark,
+		t.V_UPSIGNED upSigned,
+		p.v_chname portfolioNameCH,
+		p.v_enname portfolioNameEN,
+		f.docid attachmentid
+		from p_one_paper p
+		left join (select * from P_TS_SIGNED where D_THRUDATE = 0) t on p.paperid
+		= t.paper_id
+		left join e_dim e1 on e1.dim_cde = p.v_sector and e1.dim_type = 'sector'
+		left join p_fund_info e2 on e2.L_FUND_ID = p.V_FUND
+		left join e_dim e3 on e3.dim_cde = t.v_type and e3.dim_type = 'type'
+		left join e_dim e4 on e4.dim_cde = t.v_securitytype and e4.dim_type = 'security'
+		left join e_dim e5 on e5.dim_cde = p.v_stage and e5.dim_type = 'stage'
+		left join p_file f on f.docid = t.V_UPSIGNED
+		where 1=1
+		<if test="portfolioNameCH != null and portfolioNameCH != ''">
+			and upper(p.v_chname) like '%'||upper(#{portfolioNameCH})||'%'
+		</if>
+		<if test="portfolioNameEN !=null and portfolioNameEN != ''">
+			and upper(p.v_enname) like '%'||upper(#{portfolioNameEN})||'%'
+		</if>
+		<if test="sectorId != null and sectorId != ''">
+			and p.V_SECTOR = #{sectorId}
+		</if>
+		<if test="fundId != null and fundId != ''">
+			and p.V_FUND = #{fundId}
+		</if>
+	</select>
+
+	<!-- id查询 -->
+	<select id="selectTsSignedById" parameterType="String"
+		resultType="com.datadriver.web.tsSigned.model.TsSigned">
+		select
+		t.SIGNID tsSignedId,
+		t.PAPER_ID paperId,
+		fn_tomoney(t.N_INVESTAMOUNT) investmentAmount,
+		t.V_BRIDGELOAN bridgeLoan,
+		t.v_bridgeloanremark bridgeLoanRemark,
+		to_char(t.D_INVESTDATE,'yyyy/MM/dd') investDate,
+		fn_tomoney(t.N_AMOUNT) amount,
+		to_char(p.d_pdata,'yyyy/MM/dd') signDate,
+		p.V_SECTOR sectorId,
+		p.V_FUND fundId,
+		t.V_TYPE typeId,
+		t.V_SECURITYTYPE typeSecurityId,
+		t.V_PARTNERONE dealPartnerOne,
+		t.V_PARTNERTWO dealPartnerTwo,
+		t.V_PARTNERTHREE dealPartnerThi,
+		t.V_OWNERSHIP ownerShip,
+		t.V_OWNERSHIPREMARK ownerShipRemark,
+		t.V_PREFERENCE preference,
+		t.V_PREFERENCEREMARK preferenceRemark,
+		t.V_REDEMPTION redemption,
+		t.V_REDEMPTIONREMARK redemptionRemark,
+		t.V_BOARDIRECTOR boardDirector,
+		t.V_BOARDIRECTOREMARK boarDirectoRemark,
+		t.V_UPSIGNED upSigned,
+		p.v_chname portfolioNameCH,
+		p.v_enname portfolioNameEN,
+		f.docid attachmentid,
+		f.v_docname attachmentname,
+		f.v_docpath attachmentload
+		from p_one_paper p left join P_TS_SIGNED t on p.paperid=t.paper_id
+		left join p_file f on f.docid = t.V_UPSIGNED
+		where t.SIGNID=#{0} and t.D_THRUDATE = 0
+	</select>
+
+	<!-- 修改 -->
+	<update id="updateTsSigned" parameterType="com.datadriver.web.tsSigned.model.TsSigned">
+		update P_TS_SIGNED t set
+		t.N_INVESTAMOUNT = fn_moneytonumber(#{investmentAmount,jdbcType=NUMERIC}),
+		t.V_BRIDGELOAN =#{bridgeLoan, jdbcType=VARCHAR},
+		t.V_BRIDGELOANREMARK = #{bridgeLoanRemark,jdbcType=VARCHAR},
+		t.D_SIGNDATE = to_date(#{signDate, jdbcType=DATE},'yyyy/MM/dd'),
+		t.N_AMOUNT = fn_moneytonumber(#{amount,jdbcType=NUMERIC}),
+		t.D_INVESTDATE = to_date(#{investDate, jdbcType=DATE},'yyyy/MM/dd'),
+		t.V_SECTOR = #{sectorId, jdbcType=VARCHAR},
+		t.V_FUND = #{fundId, jdbcType=VARCHAR},
+		t.V_TYPE = #{typeId, jdbcType=VARCHAR},
+		t.V_SECURITYTYPE = #{typeSecurityId, jdbcType=VARCHAR},
+		t.V_PARTNERONE = #{dealPartnerOne, jdbcType=VARCHAR},
+		t.V_PARTNERTWO = #{dealPartnerTwo, jdbcType=VARCHAR},
+		t.V_PARTNERTHREE = #{dealPartnerThi, jdbcType=VARCHAR},
+		t.V_OWNERSHIP = #{ownerShip, jdbcType=VARCHAR},
+		t.V_OWNERSHIPREMARK = #{ownerShipRemark, jdbcType=VARCHAR},
+		t.V_PREFERENCE = #{preference, jdbcType=VARCHAR},
+		t.V_PREFERENCEREMARK = #{preferenceRemark, jdbcType=VARCHAR},
+		t.V_REDEMPTION = #{redemption, jdbcType=VARCHAR},
+		t.V_REDEMPTIONREMARK = #{redemptionRemark, jdbcType=VARCHAR},
+		t.V_BOARDIRECTOR = #{boardDirector, jdbcType=VARCHAR},
+		t.V_BOARDIRECTOREMARK = #{boarDirectoRemark, jdbcType=VARCHAR},
+		t.V_UPSIGNED = #{attachmentid, jdbcType=VARCHAR},
+		t.D_UPPDATE = sysdate
+		where t.SIGNID = #{tsSignedId,jdbcType=NUMERIC}
+	</update>
+
+	<!-- 新增 -->
+	<insert id="insertTsSigned" parameterType="com.datadriver.web.tsSigned.model.TsSigned">
+		insert into
+		P_TS_SIGNED(SIGNID,PAPER_ID,N_INVESTAMOUNT,V_BRIDGELOAN,V_BRIDGELOANREMARK,D_SIGNDATE,N_AMOUNT,D_INVESTDATE,V_SECTOR,V_FUND,V_TYPE,
+		V_SECURITYTYPE,V_PARTNERONE,V_PARTNERTWO,V_PARTNERTHREE,V_OWNERSHIP,V_OWNERSHIPREMARK,V_PREFERENCE,V_PREFERENCEREMARK,
+		V_REDEMPTION,V_REDEMPTIONREMARK,V_BOARDIRECTOR,V_BOARDIRECTOREMARK,V_UPSIGNED,D_THRUDATE,D_INDATE)
+		values(SEQ_P_TS_SIGNED_id.NEXTVAL,
+		#{paperId,jdbcType=NUMERIC},
+		fn_moneytonumber(#{investmentAmount,jdbcType=NUMERIC}),
+		#{bridgeLoan,jdbcType=VARCHAR},
+		#{bridgeLoanRemark,jdbcType=VARCHAR},
+		to_date(#{signDate, jdbcType=DATE},'yyyy/MM/dd'),
+		fn_moneytonumber(#{amount,jdbcType=NUMERIC}),
+		to_date(#{investDate, jdbcType=DATE},'yyyy/MM/dd'),
+		#{sectorId, jdbcType=VARCHAR},
+		#{fundId, jdbcType=VARCHAR},
+		#{typeId, jdbcType=VARCHAR},
+		#{typeSecurityId, jdbcType=VARCHAR},
+		#{dealPartnerOne, jdbcType=VARCHAR},
+		#{dealPartnerTwo, jdbcType=VARCHAR},
+		#{dealPartnerThi, jdbcType=VARCHAR},
+		#{ownerShip, jdbcType=VARCHAR},
+		#{ownerShipRemark, jdbcType=VARCHAR},
+		#{preference, jdbcType=VARCHAR},
+		#{preferenceRemark, jdbcType=VARCHAR},
+		#{redemption, jdbcType=VARCHAR},
+		#{redemptionRemark, jdbcType=VARCHAR},
+		#{boardDirector, jdbcType=VARCHAR},
+		#{boarDirectoRemark, jdbcType=VARCHAR},
+		#{attachmentid, jdbcType=VARCHAR},
+		0,
+		sysdate
+		)
+	</insert>
+
+	<!-- 用于删除功能 -->
+	<update id="updateThruDate" parameterType="String">
+		update P_TS_SIGNED set D_THRUDATE = 1 where SIGNID = #{tsSignedId,
+		jdbcType=NUMERIC}
+	</update>
+
+	<!-- 删除未用 -->
+	<delete id="deleteByPrimaryKey" parameterType="String">
+		delete from P_TS_SIGNED t where t.SIGNID = #{tsSignedId, jdbcType=NUMERIC}
+	</delete>
+	
+    <!-- 添加文档记录 -->
+  <insert id="saveDoc" parameterType="com.datadriver.web.onePaper.model.FileDoc">
+  	<selectKey resultType="java.lang.String" keyProperty="docid" order="BEFORE" >
+  	 select SEQ_P_FILE.NEXTVAL from dual 
+  	</selectKey>
+    insert into p_file (DOCID, V_DOCNAME, V_UPLOADERID,V_UPLOADERNAME, 
+    D_UPLOADTIME, V_DOCPATH,D_FROMDATE,D_THRUDATE,V_THRUDATE
+      )
+    values (
+      #{docid}, 
+      #{docname,jdbcType=VARCHAR}, 
+      #{uploaderid,jdbcType=VARCHAR}, 
+      #{uploadername,jdbcType=VARCHAR}, 
+      SYSDATE,
+      #{docpath,jdbcType=VARCHAR},
+      SYSDATE,	
+      SYSDATE,'0'
+      )
+  </insert>
+  
+  <!-- 修改文档 -->
+      <update id="updateDoc" parameterType="com.datadriver.web.onePaper.model.FileDoc">
+		update p_file
+		set
+		V_DOCNAME = #{docname,jdbcType=VARCHAR},
+		V_UPLOADERID = #{uploaderid,jdbcType=VARCHAR},
+	    V_UPLOADERNAME = #{uploadername,jdbcType=VARCHAR},
+		V_DOCPATH= #{docpath,jdbcType=VARCHAR},
+		D_THRUDATE=SYSDATE
+		where DOCID =
+		 #{docid,jdbcType=NUMERIC}
+	</update>
+  
+  <!-- 删除Docid -->
+      <update id="deleteDoc" parameterType="String">
+		update p_file
+		set
+		V_THRUDATE = '1'
+		where docid =#{0}
+	</update>
+	
+	<!-- 新增页面带出onePaper信息 -->
+	<select id="selectOnepaparById" parameterType="String" resultType="com.datadriver.web.tsSigned.model.TsSigned">
+		select PAPERID        paperId,
+		       V_CHNAME       portfolioNameCH,
+		       V_ENNAME       portfolioNameEN,
+		       V_SECTOR       sectorId,
+		       V_FUND         fundId,
+		       V_PARTNERONE   dealPartnerOne,
+		       V_PARTNERTWO   dealPartnerTwo,
+		       V_PARTNERTHREE dealPartnerThi
+ 	 	from p_one_paper p
+	 	where p.PAPERID = #{0}
+		
+	</select>
+</mapper>

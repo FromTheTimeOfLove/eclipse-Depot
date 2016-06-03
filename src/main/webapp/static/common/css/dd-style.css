@@ -1,0 +1,71 @@
+th,td {
+	text-align: center;
+}
+
+.table-width-1 {
+	width: 5%;
+}
+
+.table-width-2 {
+	width: 8%;
+}
+
+.table-width-3 {
+	width: 10%;
+}
+
+.table-width-5 {
+	width: 15%;
+}
+
+.table-width-6 {
+	width: 20%;
+}
+
+.table-width-7 {
+	width: 25%;
+}
+
+.ts-padding-bottom {
+	padding-bottom:15px; 
+}
+
+.ts-padding-left {
+	padding-left:-10px; 
+}
+
+.ts-padding {
+	padding-left: 4px; 
+}
+
+label {
+	display:block;
+	text-align: right;
+	margin-top: 12px;
+}
+
+#sample_6_paginate {
+	display:block;
+	text-align: right;
+	margin-top: -10px;
+	margin-right: 10px;
+}
+
+.form-title-min-height {
+	display:block;
+	min-height:1px;
+}
+
+
+.form-body-size {
+	display:block;
+	font-size: 14px;
+}
+
+.text_overflow_hide {
+	width:14em; 
+	white-space:nowrap; 
+	text-overflow:ellipsis; 
+	-o-text-overflow:ellipsis; 
+	overflow:hidden;
+}
